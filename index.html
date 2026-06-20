@@ -1649,7 +1649,12 @@ function renderResumen() {
   // Better: sum sueldos whose fecha falls in the selected month
   const [mesMes, mesAnio] = mes.split(' ');
   const mesNum = String(MESES_ES.indexOf(mesMes)+1).padStart(2,'0');
-  const sueldosMes = appData.sueldos.filter(s=> s.fecha && s.fecha.startsWith(`${mesAnio}-${mesNum}`)).reduce((s,x)=>s+x.monto,0);
+  const sueldosMesManual = appData.sueldos.filter(s=>s.fecha&&s.fecha.startsWith(`${mesAnio}-${mesNum}`)).reduce((s,x)=>s+x.monto,0);
+  let sueldosMesQuincenas = 0;
+  if(appData.quincenas) {
+    appData.agentes.forEach(a=>{ [1,2].forEach(q=>{ if(appData.quincenas[getQuincenaKey(a.nombre,mes,q)]) sueldosMesQuincenas+=a.sueldoQuincenal; }); });
+  }
+  const sueldosMes = sueldosMesManual + sueldosMesQuincenas;
   const totalGastosMes = comAgentes + sueldosMes;
   const gananciaNetoMes = totalAdelanto - totalGastosMes;
 
@@ -1752,8 +1757,22 @@ function renderResumen() {
   const agentesDelMes = appData.agentes.map(a=>{
     const nombre = (a.nombre||'').trim().toLowerCase();
     const vMes = clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre);
+    // Sueldos del sistema antiguo (manual)
     const sueldosPagados = appData.sueldos.filter(s=>s.agenteNombre===a.nombre && s.fecha && s.fecha.startsWith(`${mesAnio}-${mesNum}`));
-    const totalSueldos = sueldosPagados.reduce((t,s)=>t+s.monto,0);
+    const sueldoManual = sueldosPagados.reduce((t,s)=>t+s.monto,0);
+    // Quincenas del nuevo sistema (toggle automático)
+    let quinPagadas = 0;
+    const quinDetalle = [];
+    if(appData.quincenas) {
+      [1,2].forEach(q=>{
+        const key = getQuincenaKey(a.nombre, mes, q);
+        if(appData.quincenas[key]) {
+          quinPagadas += a.sueldoQuincenal;
+          quinDetalle.push(`Q${q}: ${fmt(a.sueldoQuincenal)}${appData.quincenas[key].fecha?' ('+appData.quincenas[key].fecha+')':''}`);
+        }
+      });
+    }
+    const totalSueldos = sueldoManual + quinPagadas;
     // Comisión ADELANTO que le entra a la empresa de las ventas de este agente
     const comEmpresaAdelanto = vMes.filter(c=>c.estado==='activo').reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
     const comEmpresaTotal = vMes.filter(c=>c.estado==='activo').reduce((s,c)=>s+calcCom(c.prima).total,0);
@@ -1764,7 +1783,7 @@ function renderResumen() {
     const diferencia = comEmpresaAdelanto - totalCostoAgente;
     const enPeligro = diferencia < 0;
     const porcentaje = totalCostoAgente > 0 ? Math.min(100,(comEmpresaAdelanto/totalCostoAgente)*100) : 100;
-    return { ...a, vMes:vMes.length, totalSueldos, comEmpresaAdelanto, comEmpresaTotal, comAg, totalCostoAgente, diferencia, enPeligro, porcentaje, sueldosPagados };
+    return { ...a, vMes:vMes.length, totalSueldos, sueldoManual, quinPagadas, quinDetalle, comEmpresaAdelanto, comEmpresaTotal, comAg, totalCostoAgente, diferencia, enPeligro, porcentaje, sueldosPagados };
   });
   const totalComAg = agentesDelMes.reduce((s,a)=>s+a.comAg,0);
   const totalSueldosTodos = agentesDelMes.reduce((s,a)=>s+a.totalSueldos,0);
@@ -1797,8 +1816,13 @@ function renderResumen() {
             </td>
             <td style="color:#3b82f6;font-weight:700">${a.vMes}</td>
             <td style="color:#a855f7;font-weight:700">${fmt(a.comEmpresaAdelanto)}</td>
-            <td style="color:#f97316">${fmt(a.totalSueldos)}<br>
-              <span style="font-size:9px;color:#64748b">${a.sueldosPagados.map(s=>`${s.quincena||s.fecha}`).join(', ')||'—'}</span>
+            <td style="color:${a.totalSueldos>0?'#f97316':'#ef4444'};font-weight:700">
+              ${a.totalSueldos>0 ? fmt(a.totalSueldos) : '<span style="color:#ef4444;font-size:10px">$0 — Sin pago</span>'}
+              <div style="font-size:9px;color:#64748b;margin-top:2px;white-space:normal;max-width:160px">
+                ${a.quinDetalle.length ? a.quinDetalle.join('<br>') : ''}
+                ${a.sueldosPagados.map(s=>`${s.quincena||s.fecha}: ${fmt(s.monto)}`).join('<br>')||''}
+                ${!a.quinDetalle.length && !a.sueldosPagados.length ? '⚠️ No registrado' : ''}
+              </div>
             </td>
             <td style="color:#facc15">${fmt(a.comAg)}</td>
             <td style="color:#ef4444;font-weight:700">${fmt(a.totalCostoAgente)}</td>
