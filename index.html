@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Salud & Dental — USA Distributor</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+/* HEADER */
+header { background: linear-gradient(135deg, #1e3a8a, #6d28d9); padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+header h1 { font-size: 22px; font-weight: 800; }
+header p { font-size: 12px; opacity: 0.75; margin-top: 2px; }
+.header-right { text-align: right; font-size: 12px; opacity: 0.8; }
+
+/* NAV */
+nav { background: #1e293b; padding: 0 32px; display: flex; gap: 4px; border-bottom: 1px solid #334155; }
+.nav-btn { padding: 14px 20px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: none; color: #94a3b8; border-bottom: 3px solid transparent; transition: all 0.2s; }
+.nav-btn.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+.nav-btn:hover:not(.active) { color: #e2e8f0; }
+
+.container { padding: 24px 32px; max-width: 1500px; margin: auto; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* CARDS */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.card { background: #1e293b; border-radius: 12px; padding: 18px; border-left: 4px solid; }
+.card label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+.card .val { font-size: 24px; font-weight: 800; margin-top: 6px; }
+.card.green { border-color: #22c55e; } .card.green .val { color: #22c55e; }
+.card.blue { border-color: #3b82f6; } .card.blue .val { color: #3b82f6; }
+.card.purple { border-color: #a855f7; } .card.purple .val { color: #a855f7; }
+.card.orange { border-color: #f97316; } .card.orange .val { color: #f97316; }
+.card.red { border-color: #ef4444; } .card.red .val { color: #ef4444; }
+.card.yellow { border-color: #eab308; } .card.yellow .val { color: #eab308; }
+
+/* SECTION */
+.section { background: #1e293b; border-radius: 12px; padding: 22px; margin-bottom: 20px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.section h2 { font-size: 15px; font-weight: 700; }
+
+/* TABS */
+.month-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.month-tab { padding: 9px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px; border: 2px solid #334155; background: #1e293b; color: #94a3b8; transition: all 0.2s; }
+.month-tab.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+.add-month-btn { padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; border: 2px dashed #334155; background: none; color: #64748b; transition: all 0.2s; }
+.add-month-btn:hover { border-color: #22c55e; color: #22c55e; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #475569; border-bottom: 1px solid #334155; white-space: nowrap; }
+td { padding: 11px 12px; border-bottom: 1px solid #0f172a; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr.data-row:hover td { background: rgba(59,130,246,0.05); }
+.total-row td { font-weight: 800; border-top: 2px solid #334155; background: #0f172a !important; color: #22c55e; font-size: 14px; }
+.amount { font-family: monospace; font-weight: 700; }
+.green-t { color: #22c55e; } .blue-t { color: #3b82f6; }
+.purple-t { color: #a855f7; } .red-t { color: #ef4444; }
+.orange-t { color: #f97316; } .yellow-t { color: #eab308; }
+
+/* BADGES */
+.badge { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+.badge.dental { background: #1d4ed8; color: #bfdbfe; }
+.badge.referido { background: #166534; color: #bbf7d0; }
+.badge.vida { background: #7c3aed; color: #ede9fe; }
+.badge.medico { background: #0f766e; color: #ccfbf1; }
+.badge.pendiente { background: #92400e; color: #fef3c7; }
+.badge.pagado { background: #166534; color: #bbf7d0; }
+
+/* FORM */
+.add-form { background: #0f172a; border-radius: 10px; padding: 20px; margin-top: 14px; border: 1px solid #334155; display: none; }
+.add-form.open { display: block; }
+.add-form h3 { font-size: 13px; color: #94a3b8; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; }
+.form-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 130px; }
+.form-group label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group input, .form-group select {
+  background: #1e293b; border: 1px solid #334155; border-radius: 6px;
+  padding: 9px 12px; color: #e2e8f0; font-size: 13px; width: 100%;
+}
+.form-group input:focus, .form-group select:focus { outline: none; border-color: #3b82f6; }
+
+/* BUTTONS */
+.btn { padding: 9px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: 700; font-size: 13px; transition: all 0.2s; }
+.btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-primary { background: #3b82f6; color: white; }
+.btn-success { background: #22c55e; color: #0f172a; }
+.btn-danger { background: #ef4444; color: white; padding: 5px 10px; font-size: 11px; border-radius: 4px; }
+.btn-outline { background: transparent; border: 1px solid #3b82f6; color: #3b82f6; }
+.btn-yellow { background: #eab308; color: #0f172a; padding: 5px 10px; font-size: 11px; border-radius: 4px; }
+
+/* QUINCENA */
+.quincena-info { background: #0f172a; border-radius: 8px; padding: 14px 18px; margin-bottom: 14px; display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+.q-item { font-size: 13px; }
+.q-item span { color: #64748b; }
+.q-item strong { color: #e2e8f0; margin-left: 6px; }
+
+/* AGENTES */
+.agente-card { background: #0f172a; border-radius: 10px; padding: 18px; border: 1px solid #334155; }
+.agente-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #3b82f6; }
+.agente-stat { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
+.agente-stat:last-child { border: none; }
+.agente-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 14px; }
+
+/* COMISIONES PENDIENTES */
+.comision-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #0f172a; border-radius: 8px; margin-bottom: 8px; }
+.comision-row .info { font-size: 13px; }
+.comision-row .info span { color: #64748b; font-size: 11px; display: block; margin-top: 2px; }
+
+footer { text-align: center; padding: 20px; color: #334155; font-size: 12px; border-top: 1px solid #1e293b; margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>💊 Dashboard Salud & Dental</h1>
+    <p>USA Distributor Inc. — 594193</p>
+  </div>
+  <div class="header-right">
+    <div id="fecha-hoy"></div>
+    <div style="margin-top:4px;color:#22c55e;font-weight:700" id="quincena-actual"></div>
+  </div>
+</header>
+
+<nav>
+  <button class="nav-btn active" onclick="showPage('ventas')">📋 Ventas</button>
+  <button class="nav-btn" onclick="showPage('comisiones')">💰 Comisiones Agentes</button>
+  <button class="nav-btn" onclick="showPage('roi')">📈 ROI Campañas</button>
+  <button class="nav-btn" onclick="showPage('resumen')">📊 Resumen Mensual</button>
+</nav>
+
+<div class="container">
+
+<!-- =================== PÁGINA: VENTAS =================== -->
+<div class="page active" id="page-ventas">
+
+  <div class="cards" id="cards-ventas"></div>
+
+  <div class="month-tabs" id="month-tabs-ventas"></div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2 id="ventas-title">📋 Ventas del Mes</h2>
+      <button class="btn btn-success" onclick="toggleForm('form-ventas')">➕ Agregar Venta</button>
+    </div>
+
+    <div class="add-form" id="form-ventas">
+      <h3>➕ Nueva Venta</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre Cliente</label>
+          <input type="text" id="f-nombre" placeholder="Ej: Juan Pérez">
+        </div>
+        <div class="form-group">
+          <label># Cuenta Cliente</label>
+          <input type="text" id="f-cuenta" placeholder="Ej: 001-2025">
+        </div>
+        <div class="form-group">
+          <label>Agente</label>
+          <select id="f-agente">
+            <option value="">-- Seleccionar --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de Seguro</label>
+          <select id="f-tipo">
+            <option value="dental">Dental</option>
+            <option value="referido">Referido</option>
+            <option value="medico">Médico</option>
+            <option value="vida">Vida</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Prima Mensual ($)</label>
+          <input type="number" id="f-prima" placeholder="0.00" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>Fecha de Venta</label>
+          <input type="date" id="f-fecha">
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <button class="btn btn-primary" onclick="agregarVenta()">💾 Guardar</button>
+          <button class="btn btn-outline" onclick="toggleForm('form-ventas')">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th># Cuenta</th>
+          <th>Cliente</th>
+          <th>Agente</th>
+          <th>Tipo</th>
+          <th>Prima/Mes</th>
+          <th>Comisión 30% (12m)</th>
+          <th>Cobras Ahora (9m)</th>
+          <th>Cobras Después (3m)</th>
+          <th>Comisión Agente</th>
+          <th>Fecha</th>
+          <th>Quincena Pago</th>
+          <th>Estado</th>
+          <th>✕</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-ventas"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- =================== PÁGINA: COMISIONES AGENTES =================== -->
+<div class="page" id="page-comisiones">
+
+  <div class="quincena-info">
+    <div class="q-item"><span>📅 Quincena actual:</span><strong id="q-actual-label">—</strong></div>
+    <div class="q-item"><span>💵 Total a pagar esta quincena:</span><strong class="green-t" id="q-total-pagar">$0.00</strong></div>
+    <div class="q-item"><span>⏳ Comisiones pendientes:</span><strong class="yellow-t" id="q-pendientes">$0.00</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>👤 Gestión de Agentes</h2>
+      <button class="btn btn-success" onclick="toggleForm('form-agente')">➕ Agregar Agente</button>
+    </div>
+
+    <div class="add-form" id="form-agente">
+      <h3>➕ Nuevo Agente</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre Completo</label>
+          <input type="text" id="fa-nombre" placeholder="Ej: Maria García">
+        </div>
+        <div class="form-group">
+          <label>Sueldo Quincenal ($)</label>
+          <input type="number" id="fa-sueldo" placeholder="0.00" step="0.01">
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <button class="btn btn-primary" onclick="agregarAgente()">💾 Guardar</button>
+          <button class="btn btn-outline" onclick="toggleForm('form-agente')">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="agente-grid" id="agentes-grid"></div>
+  </div>
+
+  <div class="section">
+    <h2 style="margin-bottom:16px">💰 Comisiones Pendientes de Pagar</h2>
+    <div id="comisiones-pendientes-list"></div>
+  </div>
+</div>
+
+<!-- =================== PÁGINA: ROI CAMPAÑAS =================== -->
+<div class="page" id="page-roi">
+
+  <div class="section">
+    <div class="section-header">
+      <h2>📈 ROI Campaña Dental</h2>
+      <button class="btn btn-primary" onclick="toggleForm('form-roi')">⚙️ Actualizar Datos</button>
+    </div>
+
+    <div class="add-form" id="form-roi">
+      <h3>Actualizar Campaña</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Leads Generados</label><input type="number" id="roi-leads" value="62"></div>
+        <div class="form-group"><label>Gasto en Anuncios ($)</label><input type="number" id="roi-gasto" value="281.94" step="0.01"></div>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <button class="btn btn-primary" onclick="actualizarROI()">Actualizar</button>
+          <button class="btn btn-outline" onclick="toggleForm('form-roi')">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards" id="cards-roi"></div>
+
+    <table>
+      <thead>
+        <tr><th>Escenario</th><th>Conversión</th><th>Clientes</th><th>Comisión Total</th><th>Costos</th><th>Ganancia Neta</th></tr>
+      </thead>
+      <tbody id="tabla-roi"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- =================== PÁGINA: RESUMEN =================== -->
+<div class="page" id="page-resumen">
+  <div class="cards" id="cards-resumen"></div>
+
+  <div class="section">
+    <h2 style="margin-bottom:16px">📊 Comparativo por Mes</h2>
+    <table>
+      <thead>
+        <tr><th>Mes</th><th>Ventas</th><th>Prima Total</th><th>Comisión (12m)</th><th>Cobras Ahora (9m)</th><th>Cobras Después (3m)</th><th>Costos</th><th>Ganancia Neta</th></tr>
+      </thead>
+      <tbody id="tabla-resumen"></tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- end container -->
+
+<footer>USA Distributor Inc. · Dashboard Salud & Dental · 2026</footer>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+let appData = {
+  agentes: [
+    { id: 1, nombre: 'Jesus Remotos', sueldoQuincenal: 400 },
+    { id: 2, nombre: 'Claudia Hidalgo', sueldoQuincenal: 400 },
+    { id: 3, nombre: 'Leidy Gallardo', sueldoQuincenal: 400 },
+  ],
+  meses: {
+    'Mayo 2026': {
+      ventas: [
+        { id:1, nombre:'Cliente 1', cuenta:'', agente:'Sin agente', tipo:'referido', prima:29.75, fecha:'2026-05-01', comPagada:false },
+        { id:2, nombre:'Cliente 2', cuenta:'', agente:'Sin agente', tipo:'referido', prima:59.67, fecha:'2026-05-01', comPagada:false },
+        { id:3, nombre:'Cliente 3', cuenta:'', agente:'Sin agente', tipo:'referido', prima:59.67, fecha:'2026-05-01', comPagada:false },
+        { id:4, nombre:'Cliente 4', cuenta:'', agente:'Sin agente', tipo:'referido', prima:129.87, fecha:'2026-05-01', comPagada:false },
+        { id:5, nombre:'Cliente 5', cuenta:'', agente:'Sin agente', tipo:'referido', prima:42.87, fecha:'2026-05-01', comPagada:false },
+        { id:6, nombre:'Cliente 6', cuenta:'', agente:'Sin agente', tipo:'referido', prima:96.14, fecha:'2026-05-01', comPagada:false },
+      ]
+    },
+    'Junio 2026': {
+      ventas: [
+        { id:7, nombre:'Cliente Dental 1', cuenta:'', agente:'Sin agente', tipo:'dental', prima:39.44, fecha:'2026-06-01', comPagada:false },
+        { id:8, nombre:'Cliente Dental 2', cuenta:'', agente:'Sin agente', tipo:'dental', prima:68.77, fecha:'2026-06-05', comPagada:false },
+        { id:9, nombre:'Cliente Dental 3', cuenta:'', agente:'Sin agente', tipo:'dental', prima:49.85, fecha:'2026-06-10', comPagada:false },
+        { id:10, nombre:'Cliente Referido 1', cuenta:'', agente:'Sin agente', tipo:'referido', prima:156.98, fecha:'2026-06-15', comPagada:false },
+      ]
+    }
+  },
+  roi: { leads: 62, gasto: 281.94 },
+  currentMes: 'Junio 2026',
+  nextId: 11
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+const fmt = n => '$' + (n||0).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const calcVenta = prima => {
+  const com = prima * 12 * 0.30;
+  return { comision: com, adelanto: com * 9/12, final: com * 3/12 };
+};
+const getQuincena = fecha => {
+  const d = new Date(fecha);
+  const day = d.getDate();
+  const mes = d.toLocaleString('es', { month: 'long', year: 'numeric' });
+  return day <= 15 ? `1ra quincena ${mes}` : `2da quincena ${mes}`;
+};
+const nextQuincena = fecha => {
+  const d = new Date(fecha);
+  const day = d.getDate();
+  if (day <= 15) { d.setDate(16); }
+  else { d.setMonth(d.getMonth()+1); d.setDate(1); }
+  return d.toLocaleDateString('es', { day:'2-digit', month:'long', year:'numeric' });
+};
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  event.target.classList.add('active');
+  renderAll();
+}
+
+function toggleForm(id) {
+  const f = document.getElementById(id);
+  f.classList.toggle('open');
+}
+
+// ============================================================
+// RENDER VENTAS
+// ============================================================
+function renderVentas() {
+  // Month tabs
+  const tabsEl = document.getElementById('month-tabs-ventas');
+  tabsEl.innerHTML = Object.keys(appData.meses).map(m =>
+    `<div class="month-tab ${m===appData.currentMes?'active':''}" onclick="setMes('${m}')">${m}</div>`
+  ).join('') + `<button class="add-month-btn" onclick="addMes()">+ Mes</button>`;
+
+  const mes = appData.meses[appData.currentMes];
+  document.getElementById('ventas-title').textContent = `📋 Ventas — ${appData.currentMes}`;
+
+  // Table
+  let html = '';
+  let totPrima=0, totCom=0, totAd=0, totFin=0, totComAg=0;
+  mes.ventas.forEach((v,i) => {
+    const c = calcVenta(v.prima);
+    totPrima+=v.prima; totCom+=c.comision; totAd+=c.adelanto; totFin+=c.final; totComAg+=8;
+    const qpago = nextQuincena(v.fecha);
+    const agenteOpts = appData.agentes.map(a => `<option value="${a.nombre}" ${v.agente===a.nombre?'selected':''}>${a.nombre}</option>`).join('');
+    html += `<tr class="data-row">
+      <td>${i+1}</td>
+      <td style="font-size:12px;color:#3b82f6;font-weight:700">${v.cuenta || '<span style="color:#475569">—</span>'}</td>
+      <td>${v.nombre}</td>
+      <td>
+        <select style="background:#0f172a;border:1px solid #334155;border-radius:5px;padding:4px 8px;color:#e2e8f0;font-size:12px" onchange="cambiarAgente(${v.id}, this.value)">
+          <option value="Sin agente" ${v.agente==='Sin agente'?'selected':''}>Sin agente</option>
+          ${agenteOpts}
+        </select>
+      </td>
+      <td><span class="badge ${v.tipo}">${v.tipo.charAt(0).toUpperCase()+v.tipo.slice(1)}</span></td>
+      <td class="amount">${fmt(v.prima)}</td>
+      <td class="amount blue-t">${fmt(c.comision)}</td>
+      <td class="amount green-t">${fmt(c.adelanto)}</td>
+      <td class="amount purple-t">${fmt(c.final)}</td>
+      <td class="amount orange-t">$8.00</td>
+      <td>${v.fecha}</td>
+      <td style="font-size:11px;color:#94a3b8">${qpago}</td>
+      <td><span class="badge ${v.comPagada?'pagado':'pendiente'}" style="cursor:pointer" onclick="togglePago(${v.id})">${v.comPagada?'✅ Pagado':'⏳ Pendiente'}</span></td>
+      <td><button class="btn btn-danger" onclick="eliminarVenta(${v.id})">✕</button></td>
+    </tr>`;
+  });
+  html += `<tr class="total-row">
+    <td colspan="5">TOTAL ${appData.currentMes.toUpperCase()}</td>
+    <td class="amount">${fmt(totPrima)}</td>
+    <td class="amount">${fmt(totCom)}</td>
+    <td class="amount">${fmt(totAd)}</td>
+    <td class="amount">${fmt(totFin)}</td>
+    <td class="amount">${fmt(totComAg)}</td>
+    <td colspan="4"></td>
+  </tr>`;
+  document.getElementById('tabla-ventas').innerHTML = html;
+
+  // Cards
+  const costos = totComAg + (appData.currentMes==='Junio 2026' ? appData.roi.gasto : 0);
+  document.getElementById('cards-ventas').innerHTML = `
+    <div class="card green"><label>Ganancia Neta</label><div class="val">${fmt(totAd - costos)}</div></div>
+    <div class="card blue"><label>Cobras Ahora (9m)</label><div class="val">${fmt(totAd)}</div></div>
+    <div class="card purple"><label>Cobras Después (3m)</label><div class="val">${fmt(totFin)}</div></div>
+    <div class="card orange"><label>Total Clientes</label><div class="val">${mes.ventas.length}</div></div>
+    <div class="card red"><label>Total Costos</label><div class="val">${fmt(costos)}</div></div>
+    <div class="card yellow"><label>Com. Agentes</label><div class="val">${fmt(totComAg)}</div></div>
+  `;
+
+  // Populate agente select
+  const sel = document.getElementById('f-agente');
+  sel.innerHTML = '<option value="">-- Seleccionar --</option>' +
+    appData.agentes.map(a => `<option value="${a.nombre}">${a.nombre}</option>`).join('');
+
+  // Default date
+  document.getElementById('f-fecha').value = new Date().toISOString().split('T')[0];
+}
+
+// ============================================================
+// RENDER COMISIONES AGENTES
+// ============================================================
+function renderComisiones() {
+  const hoy = new Date();
+  const day = hoy.getDate();
+  const qLabel = day <= 15 ? `1ra quincena ${hoy.toLocaleString('es',{month:'long',year:'numeric'})}` : `2da quincena ${hoy.toLocaleString('es',{month:'long',year:'numeric'})}`;
+  document.getElementById('q-actual-label').textContent = qLabel;
+
+  // Agentes grid
+  let gridHtml = '';
+  let totalPagar = 0;
+  appData.agentes.forEach(a => {
+    // count ventas by agent
+    let ventas = 0, comisiones = 0;
+    Object.values(appData.meses).forEach(m => {
+      m.ventas.forEach(v => {
+        if (v.agente === a.nombre) { ventas++; comisiones += 8; }
+      });
+    });
+    totalPagar += a.sueldoQuincenal;
+    gridHtml += `<div class="agente-card">
+      <h3>👤 ${a.nombre}</h3>
+      <div class="agente-stat"><span>💵 Sueldo quincenal</span><strong class="green-t">${fmt(a.sueldoQuincenal)}</strong></div>
+      <div class="agente-stat"><span>🏆 Ventas totales</span><strong class="blue-t">${ventas}</strong></div>
+      <div class="agente-stat"><span>🎯 Comisiones ganadas</span><strong class="orange-t">${fmt(comisiones)}</strong></div>
+      <div class="agente-stat"><span>💳 Total a pagar esta quincena</span><strong class="yellow-t">${fmt(a.sueldoQuincenal + comisiones)}</strong></div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="editarAgente(${a.id})">✏️ Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarAgente(${a.id})">✕ Eliminar</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('agentes-grid').innerHTML = gridHtml || '<p style="color:#64748b">No hay agentes registrados.</p>';
+  document.getElementById('q-total-pagar').textContent = fmt(totalPagar);
+
+  // Comisiones pendientes
+  let pendHtml = '';
+  let totPend = 0;
+  Object.entries(appData.meses).forEach(([mes, data]) => {
+    data.ventas.forEach(v => {
+      if (!v.comPagada) {
+        totPend += 8;
+        pendHtml += `<div class="comision-row">
+          <div class="info">
+            <strong>${v.nombre}</strong>
+            <span>Agente: ${v.agente} · ${mes} · Venta: ${v.fecha}</span>
+            <span>Pago en: ${nextQuincena(v.fecha)}</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span class="amount orange-t">$8.00</span>
+            <button class="btn btn-yellow" onclick="togglePago(${v.id})">✅ Marcar Pagado</button>
+          </div>
+        </div>`;
+      }
+    });
+  });
+  document.getElementById('comisiones-pendientes-list').innerHTML = pendHtml || '<p style="color:#22c55e;padding:12px">✅ No hay comisiones pendientes.</p>';
+  document.getElementById('q-pendientes').textContent = fmt(totPend);
+}
+
+// ============================================================
+// RENDER ROI
+// ============================================================
+function renderROI() {
+  const { leads, gasto } = appData.roi;
+  const junio = appData.meses['Junio 2026'];
+  const dentalCount = junio ? junio.ventas.filter(v=>v.tipo==='dental').length : 0;
+  const conv = leads > 0 ? ((dentalCount/leads)*100).toFixed(1) : 0;
+  const costoPorCliente = dentalCount > 0 ? (gasto/dentalCount).toFixed(2) : 0;
+  const comTotal = junio ? junio.ventas.filter(v=>v.tipo==='dental').reduce((s,v)=>s+calcVenta(v.prima).comision,0) : 0;
+  const ganancia = comTotal - gasto - (dentalCount*8);
+
+  document.getElementById('cards-roi').innerHTML = `
+    <div class="card blue"><label>Leads Generados</label><div class="val">${leads}</div></div>
+    <div class="card green"><label>Clientes Cerrados</label><div class="val">${dentalCount}</div></div>
+    <div class="card purple"><label>Conversión</label><div class="val">${conv}%</div></div>
+    <div class="card orange"><label>Costo/Cliente</label><div class="val">$${costoPorCliente}</div></div>
+    <div class="card red"><label>Gasto Anuncios</label><div class="val">${fmt(gasto)}</div></div>
+    <div class="card yellow"><label>Ganancia Neta</label><div class="val">${fmt(ganancia)}</div></div>
+  `;
+
+  // Proyecciones
+  const avgPrima = junio && junio.ventas.filter(v=>v.tipo==='dental').length > 0
+    ? junio.ventas.filter(v=>v.tipo==='dental').reduce((s,v)=>s+v.prima,0) / dentalCount : 50;
+  const comPorCliente = calcVenta(avgPrima).comision;
+  let roiHtml = '';
+  [conv, 10, 11, 15].forEach(pct => {
+    const cls = parseInt(pct)===parseInt(conv) ? 'data-row' : '';
+    const cl = Math.round(leads * pct/100);
+    const com = cl * comPorCliente;
+    const cos = gasto + cl*8;
+    const gan = com - cos;
+    roiHtml += `<tr class="${cls}">
+      <td>${parseInt(pct)===parseInt(conv)?'🔵 Actual':pct+'%'}</td>
+      <td>${pct}%</td><td>${cl}</td>
+      <td class="amount blue-t">${fmt(com)}</td>
+      <td class="amount red-t">${fmt(cos)}</td>
+      <td class="amount green-t">${fmt(gan)}</td>
+    </tr>`;
+  });
+  document.getElementById('tabla-roi').innerHTML = roiHtml;
+}
+
+// ============================================================
+// RENDER RESUMEN
+// ============================================================
+function renderResumen() {
+  let resHtml = '';
+  let grandTotal = { primas:0, com:0, ad:0, fin:0, costos:0, gan:0 };
+  Object.entries(appData.meses).forEach(([mes, data]) => {
+    let tp=0,tc=0,ta=0,tf=0;
+    data.ventas.forEach(v => {
+      const c = calcVenta(v.prima);
+      tp+=v.prima; tc+=c.comision; ta+=c.adelanto; tf+=c.final;
+    });
+    const costos = data.ventas.length*8 + (mes==='Junio 2026'?appData.roi.gasto:0);
+    const gan = ta - costos;
+    grandTotal.primas+=tp; grandTotal.com+=tc; grandTotal.ad+=ta; grandTotal.fin+=tf; grandTotal.costos+=costos; grandTotal.gan+=gan;
+    resHtml += `<tr class="data-row">
+      <td><strong>${mes}</strong></td>
+      <td class="blue-t">${data.ventas.length}</td>
+      <td class="amount">${fmt(tp)}</td>
+      <td class="amount blue-t">${fmt(tc)}</td>
+      <td class="amount green-t">${fmt(ta)}</td>
+      <td class="amount purple-t">${fmt(tf)}</td>
+      <td class="amount red-t">${fmt(costos)}</td>
+      <td class="amount green-t">${fmt(gan)}</td>
+    </tr>`;
+  });
+  resHtml += `<tr class="total-row">
+    <td>GRAN TOTAL</td><td>${Object.values(appData.meses).reduce((s,m)=>s+m.ventas.length,0)}</td>
+    <td class="amount">${fmt(grandTotal.primas)}</td>
+    <td class="amount">${fmt(grandTotal.com)}</td>
+    <td class="amount">${fmt(grandTotal.ad)}</td>
+    <td class="amount">${fmt(grandTotal.fin)}</td>
+    <td class="amount">${fmt(grandTotal.costos)}</td>
+    <td class="amount">${fmt(grandTotal.gan)}</td>
+  </tr>`;
+  document.getElementById('tabla-resumen').innerHTML = resHtml;
+
+  document.getElementById('cards-resumen').innerHTML = `
+    <div class="card green"><label>Ganancia Neta Total</label><div class="val">${fmt(grandTotal.gan)}</div></div>
+    <div class="card blue"><label>Total a Cobrar (9m)</label><div class="val">${fmt(grandTotal.ad)}</div></div>
+    <div class="card purple"><label>Cobras Después (3m)</label><div class="val">${fmt(grandTotal.fin)}</div></div>
+    <div class="card orange"><label>Total Clientes</label><div class="val">${Object.values(appData.meses).reduce((s,m)=>s+m.ventas.length,0)}</div></div>
+    <div class="card red"><label>Total Costos</label><div class="val">${fmt(grandTotal.costos)}</div></div>
+  `;
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+function setMes(mes) { appData.currentMes = mes; renderVentas(); }
+
+function addMes() {
+  const nombre = prompt('Nombre del mes (ej: Julio 2026):');
+  if (nombre && !appData.meses[nombre]) {
+    appData.meses[nombre] = { ventas: [] };
+    appData.currentMes = nombre;
+    guardarDatos();
+    renderVentas();
+  }
+}
+
+function agregarVenta() {
+  const nombre = document.getElementById('f-nombre').value.trim() || 'Cliente nuevo';
+  const cuenta = document.getElementById('f-cuenta').value.trim();
+  const agente = document.getElementById('f-agente').value || 'Sin agente';
+  const tipo = document.getElementById('f-tipo').value;
+  const prima = parseFloat(document.getElementById('f-prima').value);
+  const fecha = document.getElementById('f-fecha').value;
+  if (!prima || prima<=0) { alert('Ingresa una prima válida'); return; }
+  appData.meses[appData.currentMes].ventas.push({ id: appData.nextId++, nombre, cuenta, agente, tipo, prima, fecha, comPagada: false });
+  guardarDatos();
+  toggleForm('form-ventas');
+  renderVentas();
+}
+
+function cambiarAgente(id, nuevoAgente) {
+  Object.values(appData.meses).forEach(m => {
+    m.ventas.forEach(v => { if (v.id===id) v.agente = nuevoAgente; });
+  });
+  guardarDatos();
+}
+
+function eliminarVenta(id) {
+  if (!confirm('¿Eliminar esta venta?')) return;
+  Object.values(appData.meses).forEach(m => {
+    m.ventas = m.ventas.filter(v => v.id !== id);
+  });
+  guardarDatos();
+  renderVentas();
+}
+
+function togglePago(id) {
+  Object.values(appData.meses).forEach(m => {
+    m.ventas.forEach(v => { if (v.id===id) v.comPagada = !v.comPagada; });
+  });
+  guardarDatos();
+  renderAll();
+}
+
+function agregarAgente() {
+  const nombre = document.getElementById('fa-nombre').value.trim();
+  const sueldo = parseFloat(document.getElementById('fa-sueldo').value);
+  if (!nombre || !sueldo) { alert('Completa todos los campos'); return; }
+  appData.agentes.push({ id: Date.now(), nombre, sueldoQuincenal: sueldo });
+  guardarDatos();
+  toggleForm('form-agente');
+  renderComisiones();
+}
+
+function eliminarAgente(id) {
+  if (!confirm('¿Eliminar este agente?')) return;
+  appData.agentes = appData.agentes.filter(a => a.id !== id);
+  guardarDatos();
+  renderComisiones();
+}
+
+function editarAgente(id) {
+  const agente = appData.agentes.find(a => a.id === id);
+  if (!agente) return;
+  const nombreAnterior = agente.nombre;
+  const nuevoNombre = prompt('Nombre del agente:', agente.nombre);
+  if (nuevoNombre === null) return;
+  const nuevoSueldo = prompt('Sueldo quincenal ($):', agente.sueldoQuincenal);
+  if (nuevoSueldo === null) return;
+  if (nuevoNombre.trim()) agente.nombre = nuevoNombre.trim();
+  if (!isNaN(parseFloat(nuevoSueldo))) agente.sueldoQuincenal = parseFloat(nuevoSueldo);
+  // Actualizar nombre en ventas
+  Object.values(appData.meses).forEach(m => {
+    m.ventas.forEach(v => { if (v.agente === nombreAnterior) v.agente = agente.nombre; });
+  });
+  guardarDatos();
+  renderComisiones();
+  renderVentas();
+}
+
+function actualizarROI() {
+  appData.roi.leads = parseInt(document.getElementById('roi-leads').value)||62;
+  appData.roi.gasto = parseFloat(document.getElementById('roi-gasto').value)||281.94;
+  guardarDatos();
+  toggleForm('form-roi');
+  renderROI();
+}
+
+function renderAll() { renderVentas(); renderComisiones(); renderROI(); renderResumen(); }
+
+// ============================================================
+// PERSISTENCIA LOCAL
+// ============================================================
+function guardarDatos() {
+  localStorage.setItem('dashboardSalud', JSON.stringify(appData));
+}
+
+// ============================================================
+// INIT
+// ============================================================
+const guardado = localStorage.getItem('dashboardSalud');
+if (guardado) {
+  try { appData = JSON.parse(guardado); } catch(e) {}
+}
+const hoy = new Date();
+document.getElementById('fecha-hoy').textContent = hoy.toLocaleDateString('es',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+const day = hoy.getDate();
+document.getElementById('quincena-actual').textContent = day<=15 ? `📅 1ra Quincena` : `📅 2da Quincena`;
+
+renderAll();
+</script>
+</body>
+</html>
