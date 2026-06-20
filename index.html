@@ -2147,17 +2147,42 @@ function calcAlertaAgentes(mesFilter) {
       : appData.clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre && c.estado==='activo');
     // Lo que le entra a la EMPRESA = adelanto dental (9m) + residual salud cobrado
     const comEmpresa = ventasMes.reduce((s,c)=>s+clienteCom(c).adelanto, 0);
-    const sueldoMensual = a.sueldoQuincenal * 2;      // 2 quincenas = 1 mes
+    const sueldoMensual = a.sueldoQuincenal * 2;
+
+    // Sueldo YA PAGADO al agente (quincenas registradas en el mes filtrado)
+    let sueldoPagado = 0;
+    if(mesFilter && appData.quincenas) {
+      [1,2].forEach(q=>{
+        const key = getQuincenaKey(a.nombre, mesFilter, q);
+        if(appData.quincenas[key]) sueldoPagado += a.sueldoQuincenal;
+      });
+    } else if(appData.quincenas) {
+      // Sin filtro de mes: suma todas las quincenas pagadas
+      Object.keys(appData.quincenas).forEach(key=>{
+        const parts = key.split('||');
+        if((parts[0]||'').trim().toLowerCase() === nombre) sueldoPagado += a.sueldoQuincenal;
+      });
+    }
+    // También sueldos manuales del mes
+    if(mesFilter) {
+      const [mesMes, mesAnio] = mesFilter.split(' ');
+      const mesNum = String(MESES_ES.indexOf(mesMes)+1).padStart(2,'0');
+      sueldoPagado += appData.sueldos
+        .filter(s=>s.agenteNombre===a.nombre && s.fecha&&s.fecha.startsWith(`${mesAnio}-${mesNum}`))
+        .reduce((s,x)=>s+x.monto,0);
+    }
+
+    const sueldoPendiente = Math.max(0, sueldoMensual - sueldoPagado);
     const diferencia = comEmpresa - sueldoMensual;
     const porcentaje = sueldoMensual > 0 ? (comEmpresa / sueldoMensual) * 100 : 100;
     // Cuántas ventas promedio necesitaría para cubrir el sueldo
     const primaPromedio = ventasMes.length > 0
-      ? ventasMes.reduce((s,c)=>s+c.prima,0) / ventasMes.length
-      : 50; // prima promedio estimada si no tiene ventas
-    const comPorVentaEmpresa = calcCom(primaPromedio).adelanto;
+      ? ventasMes.filter(c=>c.tipo!=='salud').reduce((s,c)=>s+c.prima,0) / Math.max(1,ventasMes.filter(c=>c.tipo!=='salud').length)
+      : 50;
+    const comPorVentaEmpresa = calcCom(primaPromedio).adelanto || 1;
     const ventasNecesarias = Math.ceil(sueldoMensual / comPorVentaEmpresa);
     const ventasFaltantes = Math.max(0, ventasNecesarias - ventasMes.length);
-    return { ...a, comEmpresa, sueldoMensual, diferencia, porcentaje, ventasMes: ventasMes.length, ventasNecesarias, ventasFaltantes, primaPromedio };
+    return { ...a, comEmpresa, sueldoMensual, sueldoPagado, sueldoPendiente, diferencia, porcentaje, ventasMes: ventasMes.length, ventasNecesarias, ventasFaltantes, primaPromedio };
   }).filter(a=>a.diferencia < 0);
 }
 
@@ -2178,7 +2203,7 @@ function renderAlertaAgentes(containerId, mesFilter) {
         <span style="font-size:22px">⚠️</span>
         <div>
           <div style="font-weight:800;font-size:14px;color:#fb923c">Agentes que no cubren su sueldo con comisiones</div>
-          <div style="font-size:11px;color:#7c3a1a;margin-top:2px">Las comisiones de $8 por venta no alcanzan el sueldo mensual — necesitan más ventas</div>
+          <div style="font-size:11px;color:#7c3a1a;margin-top:2px">La comisión que le entra a la empresa por sus ventas no cubre el sueldo mensual del agente</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
@@ -2197,8 +2222,14 @@ function renderAlertaAgentes(containerId, mesFilter) {
                 <div style="font-size:9px;color:#475569">de ${a.ventasMes} venta${a.ventasMes!==1?'s':''}</div>
               </div>
               <div style="background:#1e293b;border-radius:6px;padding:8px">
+                <div style="color:#64748b;font-size:10px">Sueldo ya pagado</div>
+                <div style="font-weight:700;color:${a.sueldoPagado>0?'#facc15':'#475569'}">${fmt(a.sueldoPagado)}</div>
+                <div style="font-size:9px;color:#475569">pendiente: ${fmt(a.sueldoPendiente)}</div>
+              </div>
+              <div style="background:#1e293b;border-radius:6px;padding:8px">
                 <div style="color:#64748b;font-size:10px">Déficit empresa</div>
                 <div style="font-weight:700;color:#ef4444">${fmt(Math.abs(a.diferencia))}</div>
+                <div style="font-size:9px;color:#475569">com.empresa vs sueldo</div>
               </div>
               <div style="background:#1e293b;border-radius:6px;padding:8px">
                 <div style="color:#64748b;font-size:10px">Ventas necesarias</div>
