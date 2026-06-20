@@ -1464,13 +1464,62 @@ function renderResumen() {
   const totalGastosMes = comAgentes + sueldosMes;
   const gananciaNetoMes = totalAdelanto - totalGastosMes;
 
+  // ACUMULADO TOTAL (todos los meses)
+  const todosActivos = appData.clientes.filter(c=>c.estado==='activo');
+  const acumClientes = todosActivos.length;
+  const acumPrimas = todosActivos.reduce((s,c)=>s+c.prima,0);
+  const acumCom = todosActivos.reduce((s,c)=>s+calcCom(c.prima).total,0);
+  const acumAdelanto = todosActivos.reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+  const acumAdelantoCobrado = todosActivos.filter(c=>c.adelantoPagado).reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+  const acumFinal = todosActivos.reduce((s,c)=>s+calcCom(c.prima).final,0);
+  const acumFinalCobrado = todosActivos.filter(c=>c.finalPagado).reduce((s,c)=>s+calcCom(c.prima).final,0);
+  const acumComAg = appData.clientes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+  const acumSueldos = appData.sueldos.reduce((s,x)=>s+x.monto,0);
+  const acumGanancia = (acumAdelantoCobrado+acumFinalCobrado) - acumComAg - acumSueldos;
+
   document.getElementById('resumen-cards').innerHTML = `
-    <div class="card blue"><label>Clientes del Mes</label><div class="val">${clientes.length}</div><div class="sub">${activos.length} activos</div></div>
-    <div class="card green"><label>Adelanto a Cobrar (9m)</label><div class="val">${fmt(totalAdelanto)}</div><div class="sub">ingresos inmediatos</div></div>
-    <div class="card orange"><label>Final a Cobrar (3m)</label><div class="val">${fmt(totalFinal)}</div></div>
-    <div class="card yellow"><label>Com. Agentes ($8×venta)</label><div class="val">${fmt(comAgentes)}</div><div class="sub">${clientes.length} ventas</div></div>
+    <div style="grid-column:1/-1;background:#0f172a;border-radius:12px;padding:16px 20px;border:1px solid #334155;margin-bottom:4px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:14px">📊 ACUMULADO TOTAL — TODAS LAS VENTAS GENERADAS</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#64748b">Clientes Activos</div>
+          <div style="font-size:26px;font-weight:800;color:#3b82f6">${acumClientes}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#64748b">Primas/Mes Totales</div>
+          <div style="font-size:22px;font-weight:800;color:#22c55e">${fmt(acumPrimas)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#64748b">Com. Total Empresa</div>
+          <div style="font-size:22px;font-weight:800;color:#a855f7">${fmt(acumCom)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#64748b">Adelantos (9m)</div>
+          <div style="font-size:22px;font-weight:800;color:#38bdf8">${fmt(acumAdelanto)}</div>
+          <div style="font-size:10px;color:#22c55e">Cobrado: ${fmt(acumAdelantoCobrado)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#64748b">Finales (3m)</div>
+          <div style="font-size:22px;font-weight:800;color:#f97316">${fmt(acumFinal)}</div>
+          <div style="font-size:10px;color:#22c55e">Cobrado: ${fmt(acumFinalCobrado)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#64748b">Gastos Agentes+Sueldos</div>
+          <div style="font-size:22px;font-weight:800;color:#ef4444">${fmt(acumComAg+acumSueldos)}</div>
+        </div>
+        <div style="text-align:center;border-left:2px solid #334155;padding-left:12px">
+          <div style="font-size:10px;color:#64748b">GANANCIA NETA ACUM.</div>
+          <div style="font-size:26px;font-weight:800;color:${acumGanancia>=0?'#22c55e':'#ef4444'}">${fmt(acumGanancia)}</div>
+          <div style="font-size:9px;color:#64748b">cobrado − gastos</div>
+        </div>
+      </div>
+    </div>
+    <div class="card blue"><label>Ventas en ${mes}</label><div class="val">${clientes.length}</div><div class="sub">${activos.length} activos</div></div>
+    <div class="card green"><label>Adelanto (9m) del Mes</label><div class="val">${fmt(totalAdelanto)}</div></div>
+    <div class="card orange"><label>Final (3m) del Mes</label><div class="val">${fmt(totalFinal)}</div></div>
+    <div class="card yellow"><label>Com. Agentes del Mes</label><div class="val">${fmt(comAgentes)}</div><div class="sub">${clientes.length} ventas</div></div>
     <div class="card red"><label>Sueldos Pagados</label><div class="val">${fmt(sueldosMes)}</div><div class="sub">del mes</div></div>
-    <div class="card ${gananciaNetoMes>=0?'green':'red'}"><label>Ganancia Neta</label><div class="val">${fmt(gananciaNetoMes)}</div><div class="sub">adelanto − gastos</div></div>
+    <div class="card ${gananciaNetoMes>=0?'green':'red'}"><label>Ganancia Neta del Mes</label><div class="val">${fmt(gananciaNetoMes)}</div><div class="sub">adelanto − gastos</div></div>
   `;
 
   renderAlertaAgentes('resumen-alerta-sueldo', mes);
