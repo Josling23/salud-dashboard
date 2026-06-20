@@ -341,10 +341,10 @@ tr:hover td{background:#162032}
           <table>
             <thead><tr>
               <th>#</th><th>Cliente</th><th>Agente</th><th>Tipo</th><th>Prima</th>
-              <th>Adelanto (9m)</th><th>✓ Adelanto</th>
-              <th>Final (3m)</th><th>✓ Final</th>
-              <th>Com. Agente $8</th><th>✓ Com.Agente</th>
-              <th>Mes</th><th>Estado Cliente</th>
+              <th>Adelanto (9m)</th><th>✓ Estado</th><th>📅 Fecha Cobro</th>
+              <th>Final (3m)</th><th>✓ Estado</th><th>📅 Fecha Cobro</th>
+              <th>Com. Agente</th><th>✓ Estado</th><th>📅 Fecha Pago</th>
+              <th>Mes</th><th>Estado</th>
             </tr></thead>
             <tbody id="comisiones-body"></tbody>
           </table>
@@ -1194,8 +1194,8 @@ function renderComisiones() {
   const adPend = totalAd - adPagado;
   const totalFin = activos.reduce((s,c)=>s+calcCom(c.prima).final,0);
   const finPagado = activos.filter(c=>c.finalPagado).reduce((s,c)=>s+calcCom(c.prima).final,0);
-  const comAg = activos.length*8;
-  const comAgPaid = activos.filter(c=>c.comAgentePagada).length*8;
+  const comAg = activos.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+  const comAgPaid = activos.filter(c=>c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
 
   document.getElementById('com-cards').innerHTML = `
     <div class="card green"><label>Adelantos Cobrados</label><div class="val">${fmt(adPagado)}</div><div class="sub">de ${fmt(totalAd)}</div></div>
@@ -1220,6 +1220,8 @@ function renderComisiones() {
   const body = document.getElementById('comisiones-body');
   body.innerHTML = list.length ? list.map((c,i)=>{
     const com = calcCom(c.prima);
+    const comAg = c.comAgente !== undefined ? c.comAgente : 8;
+    const inpStyle = 'background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 6px;border-radius:5px;font-size:10px;width:100px';
     return `<tr>
       <td>${i+1}</td>
       <td><b>${c.nombre}</b><br><span style="font-size:10px;color:#64748b">${c.cuenta||'sin cuenta'}</span></td>
@@ -1228,14 +1230,17 @@ function renderComisiones() {
       <td>${fmt(c.prima)}</td>
       <td style="color:#22c55e;font-weight:700">${fmt(com.adelanto)}</td>
       <td><button class="toggle-btn ${c.adelantoPagado?'toggle-paid':'toggle-pending'}" onclick="toggleCom(${c.id},'adelantoPagado')">${c.adelantoPagado?'✅ PAGADO':'⏳ PENDIENTE'}</button></td>
+      <td><input type="date" style="${inpStyle}" value="${c.fechaAdelanto||''}" onchange="updateField(${c.id},'fechaAdelanto',this.value)" title="Fecha en que se cobró el adelanto"></td>
       <td style="color:#f97316;font-weight:700">${fmt(com.final)}</td>
       <td><button class="toggle-btn ${c.finalPagado?'toggle-paid':'toggle-pending'}" onclick="toggleCom(${c.id},'finalPagado')">${c.finalPagado?'✅ PAGADO':'⏳ PENDIENTE'}</button></td>
-      <td style="color:#a855f7;font-weight:700">$8.00</td>
+      <td><input type="date" style="${inpStyle}" value="${c.fechaFinal||''}" onchange="updateField(${c.id},'fechaFinal',this.value)" title="Fecha en que se cobró el final"></td>
+      <td><input type="number" step="0.01" min="0" style="${inpStyle};width:70px;color:#a855f7;font-weight:700" value="${comAg}" onchange="updateField(${c.id},'comAgente',parseFloat(this.value)||0)" title="Editar comisión del agente"></td>
       <td><button class="toggle-btn ${c.comAgentePagada?'toggle-paid':'toggle-pending'}" onclick="toggleCom(${c.id},'comAgentePagada')">${c.comAgentePagada?'✅ PAGADO':'⏳ PENDIENTE'}</button></td>
+      <td><input type="date" style="${inpStyle}" value="${c.fechaComAgente||''}" onchange="updateField(${c.id},'fechaComAgente',this.value)" title="Fecha en que se pagó al agente"></td>
       <td>${c.mes}</td>
       <td><span class="badge badge-${c.estado}">${c.estado}</span></td>
     </tr>`;
-  }).join('') : '<tr><td colspan="13" class="tbl-empty">Sin comisiones</td></tr>';
+  }).join('') : '<tr><td colspan="16" class="tbl-empty">Sin comisiones</td></tr>';
 
   // SUELDOS
   const sueldos = appData.sueldos;
