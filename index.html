@@ -866,11 +866,6 @@ function calcCom(prima) {
   return { total, adelanto: total * 9/12, final: total * 3/12 };
 }
 
-// Helper: always reads the per-client agent commission (defaults to 8 if never set)
-function getComAgente(c) {
-  return parseFloatgetComAgente(c) || 8;
-}
-
 // Unified commission calc — handles Salud (residual) vs Dental (adelanto+final)
 function clienteCom(c) {
   if (c.tipo === 'salud') {
@@ -962,7 +957,7 @@ function renderDashboard() {
       });
     });
   }
-  const totalComAg = appData.clientes.reduce((s,c)=>s+getComAgente(c),0);
+  const totalComAg = appData.clientes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
   const totalGastosGlobal = totalGasto + totalSueldos + totalQuincenas + totalComAg;
   const totalVentas = appData.clientes.length;
   const costoPorVenta = totalVentas ? (totalGastosGlobal / totalVentas) : 0;
@@ -1328,8 +1323,8 @@ function renderAgentes() {
     const totalCom = activos.reduce((s,c)=>s+clienteCom(c).total,0);
     const adelantosPend = activos.filter(c=>c.tipo!=='salud'&&!c.adelantoPagado).reduce((s,c)=>s+calcCom(c.prima).adelanto,0)
       + activos.filter(c=>c.tipo==='salud').reduce((s,c)=>s+clienteCom(c).final,0);
-    const comAgenteTotal = ventas.reduce((s,c)=>s+getComAgente(c),0);
-    const comAgentePend = ventas.filter(c=>!c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
+    const comAgenteTotal = ventas.length * 8;
+    const comAgentePend = ventas.filter(c=>!c.comAgentePagada).length * 8;
     const sueldosMes = appData.sueldos.filter(s=>s.agenteNombre===a.nombre).reduce((t,s)=>t+s.monto,0);
     return `<div class="agent-card">
       <div class="agent-card-header">
@@ -1347,7 +1342,7 @@ function renderAgentes() {
         <div class="agent-stat"><label>Ventas Activas</label><div class="val" style="color:#3b82f6">${activos.length}</div></div>
         <div class="agent-stat"><label>Com.Empresa Total</label><div class="val" style="color:#a855f7">${fmt(totalCom)}</div></div>
         <div class="agent-stat"><label>Adelantos Pendientes</label><div class="val" style="color:#f97316">${fmt(adelantosPend)}</div></div>
-        <div class="agent-stat"><label>Com. Agente Pendiente</label><div class="val" style="color:#22c55e">${fmt(comAgentePend)}</div></div>
+        <div class="agent-stat"><label>Com.$8 Pendiente</label><div class="val" style="color:#22c55e">${fmt(comAgentePend)}</div></div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;padding-top:10px;border-top:1px solid #334155">
         <span>Sueldos pagados: <b style="color:#e2e8f0">${fmt(sueldosMes)}</b></span>
@@ -1476,8 +1471,8 @@ function renderComisiones() {
   const saludCobrado = activosSalud.reduce((s,c)=>s+(parseFloat(c.comResidualMensual)||0)*(parseInt(c.mesesCobradosSalud)||0),0);
   const saludProyect = activosSalud.reduce((s,c)=>s+(parseFloat(c.comResidualMensual)||0)*12,0);
 
-  const comAg     = activos.reduce((s,c)=>s+getComAgente(c),0);
-  const comAgPaid = activos.filter(c=>c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
+  const comAg     = activos.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+  const comAgPaid = activos.filter(c=>c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
 
   document.getElementById('com-cards').innerHTML = `
     <div class="card green"><label>🦷 Dental — Adelantos Cobrados</label><div class="val">${fmt(adPagado)}</div><div class="sub">de ${fmt(totalAd)}</div></div>
@@ -1731,7 +1726,7 @@ function renderCampanas() {
         });
       });
     }
-    const comAgMes = clientesMes.reduce((s,c)=>s+getComAgente(c),0);
+    const comAgMes = clientesMes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
     const totalGastosMes = gastoMes + sueldosMes + quinMes + comAgMes;
     const gananciaMes = ingTotalMes - totalGastosMes;
     const roiMes = totalGastosMes>0 ? (gananciaMes/totalGastosMes*100) : (ingTotalMes>0?100:0);
@@ -1879,7 +1874,7 @@ function renderResumen() {
   const totalCom = activos.reduce((s,c)=>s+clienteCom(c).total,0);
   const totalAdelanto = activos.reduce((s,c)=>s+clienteCom(c).adelanto,0);  // dental adelanto + salud cobrado
   const totalFinal = activos.filter(c=>c.tipo!=='salud').reduce((s,c)=>s+calcCom(c.prima).final,0);
-  const comAgentes = clientes.reduce((s,c)=>s+getComAgente(c),0);
+  const comAgentes = clientes.length * 8;
   const sueldosTotalesMes = appData.sueldos
     .filter(s => { const mes2 = s.quincena||''; return true; }) // all sueldos (filter by mes if quincena contains mes)
     .reduce((s,x)=>s+x.monto,0);
@@ -1905,7 +1900,7 @@ function renderResumen() {
     + todosActivos.filter(c=>c.tipo==='salud').reduce((s,c)=>s+clienteCom(c).adelanto,0);
   const acumFinal = todosActivos.filter(c=>c.tipo!=='salud').reduce((s,c)=>s+calcCom(c.prima).final,0);
   const acumFinalCobrado = todosActivos.filter(c=>c.tipo!=='salud'&&c.finalPagado).reduce((s,c)=>s+calcCom(c.prima).final,0);
-  const acumComAg = appData.clientes.reduce((s,c)=>s+getComAgente(c),0);
+  const acumComAg = appData.clientes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
   const acumSueldos = appData.sueldos.reduce((s,x)=>s+x.monto,0);
   const acumGanancia = (acumAdelantoCobrado+acumFinalCobrado) - acumComAg - acumSueldos;
 
@@ -2016,7 +2011,7 @@ function renderResumen() {
     const comEmpresaAdelanto = vMes.filter(c=>c.estado==='activo').reduce((s,c)=>s+clienteCom(c).adelanto,0);
     const comEmpresaTotal = vMes.filter(c=>c.estado==='activo').reduce((s,c)=>s+clienteCom(c).total,0);
     // Lo que le cuesta a la empresa este agente
-    const comAg = vMes.reduce((s,c)=>s+getComAgente(c),0);
+    const comAg = vMes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
     const totalCostoAgente = comAg + totalSueldos;
     // Diferencia: com empresa (adelanto) vs costo agente
     const diferencia = comEmpresaAdelanto - totalCostoAgente;
@@ -2335,8 +2330,8 @@ function renderPagos() {
       });
     });
   });
-  const totalComAgPagadas = appData.clientes.filter(c=>c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
-  const totalComAgPendientes = appData.clientes.filter(c=>!c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
+  const totalComAgPagadas = appData.clientes.filter(c=>c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+  const totalComAgPendientes = appData.clientes.filter(c=>!c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
 
   document.getElementById('pagos-cards').innerHTML = `
     <div class="card green"><label>Quincenas Pagadas</label><div class="val">${fmt(totalQuincenasPagadas)}</div></div>
@@ -2349,8 +2344,8 @@ function renderPagos() {
   document.getElementById('pagos-por-agente').innerHTML = agentes.map(a=>{
     const nombre = (a.nombre||'').trim().toLowerCase();
     const ventasAgente = appData.clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre);
-    const comAgPagadas = ventasAgente.filter(c=>c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
-    const comAgPend = ventasAgente.filter(c=>!c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
+    const comAgPagadas = ventasAgente.filter(c=>c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+    const comAgPend = ventasAgente.filter(c=>!c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
 
     let totalPagadoAg = 0, totalPendienteAg = 0;
     meses.forEach(mes=>{
@@ -2363,8 +2358,8 @@ function renderPagos() {
 
     const filasMeses = meses.map(mes=>{
       const ventasMes = ventasAgente.filter(c=>c.mes===mes);
-      const comMes = ventasMes.reduce((s,c)=>s+getComAgente(c),0);
-      const comMesPagada = ventasMes.filter(c=>c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
+      const comMes = ventasMes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+      const comMesPagada = ventasMes.filter(c=>c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
 
       const q1key = getQuincenaKey(a.nombre, mes, 1);
       const q2key = getQuincenaKey(a.nombre, mes, 2);
@@ -2383,7 +2378,7 @@ function renderPagos() {
         <div style="display:flex;gap:14px;font-size:12px">
           <span>Sueldos pagados: <b style="color:#22c55e">${fmt(totalPagadoAg)}</b></span>
           <span>Sueldos pendientes: <b style="color:#ef4444">${fmt(totalPendienteAg)}</b></span>
-          <span>Com. agente pendientes: <b style="color:#f97316">${fmt(comAgPend)}</b></span>
+          <span>Com.$8 pendientes: <b style="color:#f97316">${fmt(comAgPend)}</b></span>
         </div>
       </div>
 
@@ -2574,7 +2569,7 @@ function renderChargebacks() {
   // Cards
   const totalCBMonto = cbs.reduce((s,c)=>s+(c.chargebackMonto||0),0);
   const totalAdelantoOriginal = cbs.reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
-  const comAgRecuperar = cbs.filter(c=>c.comAgentePagada).reduce((s,c)=>s+getComAgente(c),0);
+  const comAgRecuperar = cbs.filter(c=>c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
   const totalPerdida = totalCBMonto + comAgRecuperar;
   // Impacto en comisión: lo que quedó = adelanto - chargeback
   const netoReal = cbs.reduce((s,c)=>s+(calcCom(c.prima).adelanto-(c.chargebackMonto||0)),0);
