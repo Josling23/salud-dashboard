@@ -219,6 +219,7 @@ tr:hover td{background:#162032}
     <!-- ========== DASHBOARD ========== -->
     <div class="page active" id="page-dashboard">
       <div class="cards" id="dash-cards"></div>
+      <div id="dash-alerta-sueldo" style="margin-bottom:20px"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div class="section">
           <div class="section-header"><h2>⚡ Últimas Ventas</h2></div>
@@ -393,6 +394,7 @@ tr:hover td{background:#162032}
         </div>
         <div class="tbl-wrap" id="resumen-table-wrap"></div>
       </div>
+      <div id="resumen-alerta-sueldo"></div>
       <div class="section">
         <div class="section-header"><h2>👨‍💼 Sueldos & Comisiones Agentes del Mes</h2></div>
         <div id="resumen-agentes-table"></div>
@@ -745,6 +747,9 @@ function renderDashboard() {
       <div class="bar-wrap"><div class="bar-fill" style="width:${(v/maxV)*100}%"></div></div>
     </div>
   `).join('') || '<div style="color:#475569;font-size:13px;text-align:center;padding:20px">Sin datos</div>';
+
+  // ALERTA BAJO RENDIMIENTO
+  renderAlertaAgentes('dash-alerta-sueldo', mesActual);
 
   // AGENT SUMMARY
   const agSum = appData.agentes.map(a=>{
@@ -1407,6 +1412,7 @@ function renderResumen() {
     <div class="card ${gananciaNetoMes>=0?'green':'red'}"><label>Ganancia Neta</label><div class="val">${fmt(gananciaNetoMes)}</div><div class="sub">adelanto − gastos</div></div>
   `;
 
+  renderAlertaAgentes('resumen-alerta-sueldo', mes);
   document.getElementById('resumen-table-wrap').innerHTML = clientes.length ? `
     <table>
       <thead><tr><th>#</th><th>Cliente</th><th>Cuenta</th><th>Agente</th><th>Tipo</th><th>Prima/Mes</th><th>Com.Total</th><th>Adelanto (9m)</th><th>✓ Adelanto</th><th>Final (3m)</th><th>✓ Final</th><th>Com.Agente</th><th>✓ Ag.</th><th>Estado</th></tr></thead>
@@ -1498,6 +1504,80 @@ function renderResumen() {
       <div><div style="font-size:11px;color:#64748b">💸 Sueldos pagados</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmt(totalSueldosTodos)}</div></div>
       <div style="color:#334155;font-size:24px;display:flex;align-items:center">=</div>
       <div><div style="font-size:11px;color:#64748b">✅ GANANCIA NETA DEL MES</div><div style="font-size:24px;font-weight:800;color:${gananciaNetoMes>=0?'#22c55e':'#ef4444'}">${fmt(gananciaNetoMes)}</div></div>
+    </div>`;
+}
+
+// ============================================================
+// ALERTA: AGENTES BAJO RENDIMIENTO
+// ============================================================
+function calcAlertaAgentes(mesFilter) {
+  // Para cada agente, compara: com $8 generadas en el mes vs sueldo quincenal × 2 (mensual)
+  return appData.agentes.map(a=>{
+    const ventasMes = mesFilter
+      ? appData.clientes.filter(c=>c.agente===a.nombre && c.mes===mesFilter)
+      : appData.clientes.filter(c=>c.agente===a.nombre);
+    const comVentas = ventasMes.length * 8;           // $8 por venta
+    const sueldoMensual = a.sueldoQuincenal * 2;      // 2 quincenas = 1 mes
+    const diferencia = comVentas - sueldoMensual;
+    const ventasNecesarias = Math.ceil(sueldoMensual / 8);
+    const ventasFaltantes = Math.max(0, ventasNecesarias - ventasMes.length);
+    return { ...a, comVentas, sueldoMensual, diferencia, ventasMes: ventasMes.length, ventasNecesarias, ventasFaltantes };
+  }).filter(a=>a.diferencia < 0); // solo los que NO cubren su sueldo
+}
+
+function renderAlertaAgentes(containerId, mesFilter) {
+  const alertas = calcAlertaAgentes(mesFilter);
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  if(!alertas.length) {
+    el.innerHTML = `<div style="background:#052e16;border:1px solid #166534;border-radius:12px;padding:14px 20px;margin-bottom:4px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:20px">✅</span>
+      <span style="color:#4ade80;font-weight:600;font-size:13px">Todos los agentes cubren su sueldo con comisiones este mes. ¡Excelente!</span>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div style="background:#1c0a00;border:1.5px solid #9a3412;border-radius:12px;padding:20px;margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <span style="font-size:22px">⚠️</span>
+        <div>
+          <div style="font-weight:800;font-size:14px;color:#fb923c">Agentes que no cubren su sueldo con comisiones</div>
+          <div style="font-size:11px;color:#7c3a1a;margin-top:2px">Las comisiones de $8 por venta no alcanzan el sueldo mensual — necesitan más ventas</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+        ${alertas.map(a=>`
+          <div style="background:#0f172a;border-radius:10px;padding:16px;border-left:4px solid #ef4444">
+            <div style="font-weight:700;font-size:14px;margin-bottom:10px">👤 ${a.nombre}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;margin-bottom:12px">
+              <div style="background:#1e293b;border-radius:6px;padding:8px">
+                <div style="color:#64748b;font-size:10px">Sueldo mensual</div>
+                <div style="font-weight:700;color:#f1f5f9">${fmt(a.sueldoMensual)}</div>
+              </div>
+              <div style="background:#1e293b;border-radius:6px;padding:8px">
+                <div style="color:#64748b;font-size:10px">Com. $8 generadas</div>
+                <div style="font-weight:700;color:#22c55e">${fmt(a.comVentas)}</div>
+              </div>
+              <div style="background:#1e293b;border-radius:6px;padding:8px">
+                <div style="color:#64748b;font-size:10px">Ventas este mes</div>
+                <div style="font-weight:700;color:#3b82f6">${a.ventasMes}</div>
+              </div>
+              <div style="background:#1e293b;border-radius:6px;padding:8px">
+                <div style="color:#64748b;font-size:10px">Ventas para cubrir</div>
+                <div style="font-weight:700;color:#f97316">${a.ventasNecesarias}</div>
+              </div>
+            </div>
+            <div style="background:#1c0a00;border-radius:8px;padding:10px;border:1px solid #9a3412">
+              <div style="font-size:11px;color:#fb923c">Le faltan <b style="font-size:14px;color:#ef4444">${a.ventasFaltantes} venta${a.ventasFaltantes!==1?'s':''}</b> para cubrir su sueldo</div>
+              <div style="margin-top:4px;font-size:10px;color:#7c3a1a">Déficit: <b style="color:#ef4444">${fmt(Math.abs(a.diferencia))}</b></div>
+              <div class="bar-wrap" style="margin-top:8px;height:6px">
+                <div class="bar-fill" style="width:${Math.min(100,(a.comVentas/a.sueldoMensual)*100).toFixed(0)}%;background:linear-gradient(90deg,#ef4444,#f97316)"></div>
+              </div>
+              <div style="font-size:10px;color:#64748b;margin-top:3px">${((a.comVentas/a.sueldoMensual)*100).toFixed(0)}% del sueldo cubierto</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
     </div>`;
 }
 
