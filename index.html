@@ -379,8 +379,12 @@ tr:hover td{background:#162032}
         <div id="campanas-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:20px"></div>
       </div>
       <div class="section">
-        <div class="section-header"><h2>📊 Análisis de Conversión</h2></div>
+        <div class="section-header"><h2>📊 Análisis de Conversión por Origen</h2></div>
         <div id="conversion-analysis"></div>
+      </div>
+      <div class="section">
+        <div class="section-header"><h2>🌐 ROI General por Mes — Campañas + Orgánico</h2></div>
+        <div id="roi-general"></div>
       </div>
     </div>
 
@@ -1395,14 +1399,14 @@ function renderCampanas() {
       <div style="background:#0f172a;border-radius:10px;padding:16px">
         <div style="font-size:11px;color:#64748b;margin-bottom:8px">📢 VENTAS POR CAMPAÑAS</div>
         <div style="font-size:24px;font-weight:800;color:#3b82f6">${totalVentasCamp}</div>
-        <div style="font-size:11px;color:#64748b">Ingresos: ${fmt(ingCamp)}</div>
+        <div style="font-size:11px;color:#64748b">Ingresos (adelanto): ${fmt(ingCamp)}</div>
         <div style="font-size:11px;color:#64748b">Gasto invertido: ${fmt(totalGasto)}</div>
         <div style="font-size:11px;color:#22c55e;margin-top:4px">Ganancia neta: ${fmt(ingCamp-totalGasto)}</div>
       </div>
       <div style="background:#0f172a;border-radius:10px;padding:16px">
         <div style="font-size:11px;color:#64748b;margin-bottom:8px">🤝 VENTAS ORGÁNICAS / REFERIDOS</div>
         <div style="font-size:24px;font-weight:800;color:#22c55e">${totalVentasOrg}</div>
-        <div style="font-size:11px;color:#64748b">Ingresos: ${fmt(ingOrg)}</div>
+        <div style="font-size:11px;color:#64748b">Ingresos (adelanto): ${fmt(ingOrg)}</div>
         <div style="font-size:11px;color:#64748b">Sin costo de adquisición</div>
         <div style="font-size:11px;color:#22c55e;margin-top:4px">Ganancia neta: ${fmt(ingOrg)}</div>
       </div>
@@ -1414,6 +1418,108 @@ function renderCampanas() {
       </div>
     </div>
   `;
+
+  // ROI GENERAL POR MES
+  const meses = getMeses();
+  const roiRows = meses.map(mes=>{
+    const clientesMes = appData.clientes.filter(c=>c.mes===mes && c.estado==='activo');
+    const ventasCamp = clientesMes.filter(c=>c.campana);
+    const ventasOrg  = clientesMes.filter(c=>!c.campana);
+    const ingCampMes = ventasCamp.reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+    const ingOrgMes  = ventasOrg.reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+    const ingFinalMes= clientesMes.reduce((s,c)=>s+calcCom(c.prima).final,0);
+    const ingTotalMes= ingCampMes + ingOrgMes;
+    // gasto de campañas que iniciaron en este mes
+    const gastoMes = appData.campanas
+      .filter(c=>{ const [mm,aa]=mes.split(' '); const mn=String(MESES_ES.indexOf(mm)+1).padStart(2,'0'); return c.inicio&&c.inicio.startsWith(`${aa}-${mn}`); })
+      .reduce((s,c)=>s+c.gasto,0);
+    // sueldos del mes
+    const [mesMes2, mesAnio2] = mes.split(' ');
+    const mesNum2 = String(MESES_ES.indexOf(mesMes2)+1).padStart(2,'0');
+    const sueldosMes = appData.sueldos.filter(s=>s.fecha&&s.fecha.startsWith(`${mesAnio2}-${mesNum2}`)).reduce((s,x)=>s+x.monto,0);
+    // quincenas del mes (nuevo sistema)
+    let quinMes = 0;
+    if(appData.quincenas) {
+      appData.agentes.forEach(a=>{
+        [1,2].forEach(q=>{
+          const key = getQuincenaKey(a.nombre, mes, q);
+          if(appData.quincenas[key]) quinMes += a.sueldoQuincenal;
+        });
+      });
+    }
+    const comAgMes = clientesMes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+    const totalGastosMes = gastoMes + sueldosMes + quinMes + comAgMes;
+    const gananciaMes = ingTotalMes - totalGastosMes;
+    const roiMes = totalGastosMes>0 ? (gananciaMes/totalGastosMes*100) : (ingTotalMes>0?100:0);
+    return { mes, total:clientesMes.length, ventasCamp:ventasCamp.length, ventasOrg:ventasOrg.length, ingCampMes, ingOrgMes, ingFinalMes, ingTotalMes, gastoMes, sueldosMes:sueldosMes+quinMes, comAgMes, totalGastosMes, gananciaMes, roiMes };
+  }).filter(r=>r.total>0);
+
+  const totIngreso = roiRows.reduce((s,r)=>s+r.ingTotalMes,0);
+  const totGasto   = roiRows.reduce((s,r)=>s+r.totalGastosMes,0);
+  const totGanancia= roiRows.reduce((s,r)=>s+r.gananciaMes,0);
+  const roiTotal   = totGasto>0?(totGanancia/totGasto*100):0;
+
+  document.getElementById('roi-general').innerHTML = roiRows.length ? `
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Mes</th>
+          <th>Total Ventas</th>
+          <th>📢 Ventas Campaña</th>
+          <th>🤝 Ventas Orgánico</th>
+          <th>Ing. Adelanto (9m)</th>
+          <th>Ing. Final (3m)</th>
+          <th>Ingreso Total</th>
+          <th>Gasto Campañas</th>
+          <th>Sueldos Pagados</th>
+          <th>Com. $8 Agentes</th>
+          <th>Total Gastos</th>
+          <th>Ganancia Neta</th>
+          <th>ROI</th>
+        </tr></thead>
+        <tbody>
+          ${roiRows.map(r=>{
+            const pos = r.gananciaMes >= 0;
+            const maxBar = Math.max(...roiRows.map(x=>x.ingTotalMes),1);
+            return `<tr>
+              <td style="font-weight:700">${r.mes}</td>
+              <td style="color:#3b82f6;font-weight:700">${r.total}</td>
+              <td style="color:#a855f7">${r.ventasCamp} <span style="font-size:9px;color:#64748b">(${fmt(r.ingCampMes)})</span></td>
+              <td style="color:#22c55e">${r.ventasOrg} <span style="font-size:9px;color:#64748b">(${fmt(r.ingOrgMes)})</span></td>
+              <td style="color:#38bdf8;font-weight:700">${fmt(r.ingTotalMes)}</td>
+              <td style="color:#f97316">${fmt(r.ingFinalMes)}</td>
+              <td style="font-weight:800;color:#38bdf8">
+                ${fmt(r.ingTotalMes+r.ingFinalMes)}
+                <div class="bar-wrap" style="margin-top:3px;width:80px"><div class="bar-fill" style="width:${(r.ingTotalMes/maxBar*100).toFixed(0)}%"></div></div>
+              </td>
+              <td style="color:#ef4444">${r.gastoMes>0?fmt(r.gastoMes):'—'}</td>
+              <td style="color:#f97316">${r.sueldosMes>0?fmt(r.sueldosMes):'—'}</td>
+              <td style="color:#facc15">${r.comAgMes>0?fmt(r.comAgMes):'—'}</td>
+              <td style="color:#ef4444;font-weight:700">${fmt(r.totalGastosMes)}</td>
+              <td style="font-weight:800;color:${pos?'#22c55e':'#ef4444'}">${pos?'+':''}${fmt(r.gananciaMes)}</td>
+              <td>
+                <span style="font-weight:800;font-size:13px;color:${pos?'#22c55e':'#ef4444'}">${pos?'+':''}${r.roiMes.toFixed(1)}%</span>
+              </td>
+            </tr>`;
+          }).join('')}
+          <tr style="background:#0f172a;border-top:2px solid #334155;font-weight:700">
+            <td>TOTAL</td>
+            <td style="color:#3b82f6">${roiRows.reduce((s,r)=>s+r.total,0)}</td>
+            <td style="color:#a855f7">${roiRows.reduce((s,r)=>s+r.ventasCamp,0)}</td>
+            <td style="color:#22c55e">${roiRows.reduce((s,r)=>s+r.ventasOrg,0)}</td>
+            <td style="color:#38bdf8">${fmt(totIngreso)}</td>
+            <td style="color:#f97316">${fmt(roiRows.reduce((s,r)=>s+r.ingFinalMes,0))}</td>
+            <td style="color:#38bdf8">${fmt(totIngreso+roiRows.reduce((s,r)=>s+r.ingFinalMes,0))}</td>
+            <td style="color:#ef4444">${fmt(roiRows.reduce((s,r)=>s+r.gastoMes,0))}</td>
+            <td style="color:#f97316">${fmt(roiRows.reduce((s,r)=>s+r.sueldosMes,0))}</td>
+            <td style="color:#facc15">${fmt(roiRows.reduce((s,r)=>s+r.comAgMes,0))}</td>
+            <td style="color:#ef4444">${fmt(totGasto)}</td>
+            <td style="color:${totGanancia>=0?'#22c55e':'#ef4444'};font-size:15px">${totGanancia>=0?'+':''}${fmt(totGanancia)}</td>
+            <td style="color:${roiTotal>=0?'#22c55e':'#ef4444'};font-size:15px">${roiTotal>=0?'+':''}${roiTotal.toFixed(1)}%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>` : '<div style="color:#475569;padding:20px;text-align:center">Sin ventas registradas aún</div>';
 }
 
 function openCampanaModal(id=null) {
