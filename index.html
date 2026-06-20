@@ -1009,8 +1009,8 @@ function renderDashboard() {
     </div>
   `).join('') || '<div style="color:#475569;font-size:13px;text-align:center;padding:20px">Sin datos</div>';
 
-  // ALERTA BAJO RENDIMIENTO
-  renderAlertaAgentes('dash-alerta-sueldo', mesActual);
+  // ALERTA BAJO RENDIMIENTO — sin filtro de mes: compara todas las ventas activas del agente vs su sueldo mensual
+  renderAlertaAgentes('dash-alerta-sueldo', null);
 
   // AGENT SUMMARY
   const agSum = appData.agentes.map(a=>{
@@ -2203,7 +2203,7 @@ function renderAlertaAgentes(containerId, mesFilter) {
         <span style="font-size:22px">⚠️</span>
         <div>
           <div style="font-weight:800;font-size:14px;color:#fb923c">Agentes que no cubren su sueldo con comisiones</div>
-          <div style="font-size:11px;color:#7c3a1a;margin-top:2px">La comisión que le entra a la empresa por sus ventas no cubre el sueldo mensual del agente</div>
+          <div style="font-size:11px;color:#7c3a1a;margin-top:2px">La comisión total que genera el agente (todas sus ventas activas) no cubre su sueldo mensual</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
