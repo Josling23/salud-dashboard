@@ -1790,7 +1790,49 @@ function renderResumen() {
   const totalCostoTodos = agentesDelMes.reduce((s,a)=>s+a.totalCostoAgente,0);
   const totalComEmpresa = agentesDelMes.reduce((s,a)=>s+a.comEmpresaAdelanto,0);
 
+  // TOTALES REALES del mes (todas las ventas, con o sin agente asignado)
+  const todasVentasMes = clientes.filter(c=>c.estado==='activo');
+  const comEmpresaRealMes = todasVentasMes.reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+  const comEmpresaFinalMes = todasVentasMes.reduce((s,c)=>s+calcCom(c.prima).final,0);
+  const comEmpresaTotalMes = todasVentasMes.reduce((s,c)=>s+calcCom(c.prima).total,0);
+  const comEmpresaCobradaMes = todasVentasMes.filter(c=>c.adelantoPagado).reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+  const ventasSinAgente = clientes.filter(c=>!c.agente||c.agente==='Sin agente').length;
+
   document.getElementById('resumen-agentes-table').innerHTML = `
+    <!-- RESUMEN REAL DEL MES -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px">
+      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #1a9fe3">
+        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Ventas del Mes</div>
+        <div style="font-size:24px;font-weight:800;color:#1a9fe3;margin-top:4px">${clientes.length}</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">${todasVentasMes.length} activas${ventasSinAgente>0?` · <span style="color:#f97316">${ventasSinAgente} sin agente</span>`:''}</div>
+      </div>
+      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #a855f7">
+        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Com. Empresa Generada</div>
+        <div style="font-size:24px;font-weight:800;color:#a855f7;margin-top:4px">${fmt(comEmpresaTotalMes)}</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">30% × 12m de todas las ventas</div>
+      </div>
+      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #22c55e">
+        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Adelanto (9m) a Cobrar</div>
+        <div style="font-size:24px;font-weight:800;color:#22c55e;margin-top:4px">${fmt(comEmpresaRealMes)}</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Cobrado: <b style="color:#22c55e">${fmt(comEmpresaCobradaMes)}</b> · Pendiente: <b style="color:#f97316">${fmt(comEmpresaRealMes-comEmpresaCobradaMes)}</b></div>
+      </div>
+      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #f97316">
+        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Final (3m) Pendiente</div>
+        <div style="font-size:24px;font-weight:800;color:#f97316;margin-top:4px">${fmt(comEmpresaFinalMes)}</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">se cobra al final del contrato</div>
+      </div>
+      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #ef4444">
+        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Total Gastos Agentes</div>
+        <div style="font-size:24px;font-weight:800;color:#ef4444;margin-top:4px">${fmt(totalSueldosTodos+totalComAg)}</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">sueldos + com.$8</div>
+      </div>
+      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid ${comEmpresaRealMes-(totalSueldosTodos+totalComAg)>=0?'#22c55e':'#ef4444'}">
+        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Ganancia Neta del Mes</div>
+        <div style="font-size:24px;font-weight:800;color:${comEmpresaRealMes-(totalSueldosTodos+totalComAg)>=0?'#22c55e':'#ef4444'};margin-top:4px">${fmt(comEmpresaRealMes-(totalSueldosTodos+totalComAg))}</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">adelanto − gastos agentes</div>
+      </div>
+    </div>
+    ${ventasSinAgente>0?`<div style="background:#1c0a00;border:1px solid #9a3412;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#fb923c">⚠️ <b>${ventasSinAgente} venta${ventasSinAgente!==1?'s':''}</b> no tienen agente asignado — sus comisiones no aparecen en la tabla de abajo. Asígnalas en la sección <b>Clientes</b>.</div>`:''}
     <table>
       <thead><tr>
         <th>Agente</th>
