@@ -1572,18 +1572,27 @@ function renderResumen() {
 // ALERTA: AGENTES BAJO RENDIMIENTO
 // ============================================================
 function calcAlertaAgentes(mesFilter) {
-  // Para cada agente, compara: com $8 generadas en el mes vs sueldo quincenal × 2 (mensual)
+  // Compara: comisión de EMPRESA generada por ventas del agente vs sueldo mensual del agente
+  // Si la empresa gana menos de lo que le paga al agente → ALERTA
   return appData.agentes.map(a=>{
+    const nombre = (a.nombre||'').trim().toLowerCase();
     const ventasMes = mesFilter
-      ? appData.clientes.filter(c=>c.agente===a.nombre && c.mes===mesFilter)
-      : appData.clientes.filter(c=>c.agente===a.nombre);
-    const comVentas = ventasMes.length * 8;           // $8 por venta
+      ? appData.clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre && c.mes===mesFilter && c.estado==='activo')
+      : appData.clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre && c.estado==='activo');
+    // Lo que le entra a la EMPRESA = adelanto (9m) de cada venta
+    const comEmpresa = ventasMes.reduce((s,c)=>s+calcCom(c.prima).adelanto, 0);
     const sueldoMensual = a.sueldoQuincenal * 2;      // 2 quincenas = 1 mes
-    const diferencia = comVentas - sueldoMensual;
-    const ventasNecesarias = Math.ceil(sueldoMensual / 8);
+    const diferencia = comEmpresa - sueldoMensual;
+    const porcentaje = sueldoMensual > 0 ? (comEmpresa / sueldoMensual) * 100 : 100;
+    // Cuántas ventas promedio necesitaría para cubrir el sueldo
+    const primaPromedio = ventasMes.length > 0
+      ? ventasMes.reduce((s,c)=>s+c.prima,0) / ventasMes.length
+      : 50; // prima promedio estimada si no tiene ventas
+    const comPorVentaEmpresa = calcCom(primaPromedio).adelanto;
+    const ventasNecesarias = Math.ceil(sueldoMensual / comPorVentaEmpresa);
     const ventasFaltantes = Math.max(0, ventasNecesarias - ventasMes.length);
-    return { ...a, comVentas, sueldoMensual, diferencia, ventasMes: ventasMes.length, ventasNecesarias, ventasFaltantes };
-  }).filter(a=>a.diferencia < 0); // solo los que NO cubren su sueldo
+    return { ...a, comEmpresa, sueldoMensual, diferencia, porcentaje, ventasMes: ventasMes.length, ventasNecesarias, ventasFaltantes, primaPromedio };
+  }).filter(a=>a.diferencia < 0);
 }
 
 function renderAlertaAgentes(containerId, mesFilter) {
@@ -1593,7 +1602,7 @@ function renderAlertaAgentes(containerId, mesFilter) {
   if(!alertas.length) {
     el.innerHTML = `<div style="background:#052e16;border:1px solid #166534;border-radius:12px;padding:14px 20px;margin-bottom:4px;display:flex;align-items:center;gap:12px">
       <span style="font-size:20px">✅</span>
-      <span style="color:#4ade80;font-weight:600;font-size:13px">Todos los agentes cubren su sueldo con comisiones este mes. ¡Excelente!</span>
+      <span style="color:#4ade80;font-weight:600;font-size:13px">✅ Las comisiones de empresa generadas por cada agente cubren su sueldo mensual. ¡Todos son rentables!</span>
     </div>`;
     return;
   }
@@ -1606,7 +1615,7 @@ function renderAlertaAgentes(containerId, mesFilter) {
           <div style="font-size:11px;color:#7c3a1a;margin-top:2px">Las comisiones de $8 por venta no alcanzan el sueldo mensual — necesitan más ventas</div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
         ${alertas.map(a=>`
           <div style="background:#0f172a;border-radius:10px;padding:16px;border-left:4px solid #ef4444">
             <div style="font-weight:700;font-size:14px;margin-bottom:10px">👤 ${a.nombre}</div>
@@ -1614,27 +1623,30 @@ function renderAlertaAgentes(containerId, mesFilter) {
               <div style="background:#1e293b;border-radius:6px;padding:8px">
                 <div style="color:#64748b;font-size:10px">Sueldo mensual</div>
                 <div style="font-weight:700;color:#f1f5f9">${fmt(a.sueldoMensual)}</div>
+                <div style="font-size:9px;color:#475569">(${fmt(a.sueldoQuincenal)} × 2 quinc.)</div>
               </div>
               <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Com. $8 generadas</div>
-                <div style="font-weight:700;color:#22c55e">${fmt(a.comVentas)}</div>
+                <div style="color:#64748b;font-size:10px">Com. empresa (adelanto)</div>
+                <div style="font-weight:700;color:#22c55e">${fmt(a.comEmpresa)}</div>
+                <div style="font-size:9px;color:#475569">de ${a.ventasMes} venta${a.ventasMes!==1?'s':''}</div>
               </div>
               <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Ventas este mes</div>
-                <div style="font-weight:700;color:#3b82f6">${a.ventasMes}</div>
+                <div style="color:#64748b;font-size:10px">Déficit empresa</div>
+                <div style="font-weight:700;color:#ef4444">${fmt(Math.abs(a.diferencia))}</div>
               </div>
               <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Ventas para cubrir</div>
-                <div style="font-weight:700;color:#f97316">${a.ventasNecesarias}</div>
+                <div style="color:#64748b;font-size:10px">Ventas necesarias</div>
+                <div style="font-weight:700;color:#f97316">~${a.ventasNecesarias}</div>
+                <div style="font-size:9px;color:#475569">tiene ${a.ventasMes}</div>
               </div>
             </div>
             <div style="background:#1c0a00;border-radius:8px;padding:10px;border:1px solid #9a3412">
-              <div style="font-size:11px;color:#fb923c">Le faltan <b style="font-size:14px;color:#ef4444">${a.ventasFaltantes} venta${a.ventasFaltantes!==1?'s':''}</b> para cubrir su sueldo</div>
-              <div style="margin-top:4px;font-size:10px;color:#7c3a1a">Déficit: <b style="color:#ef4444">${fmt(Math.abs(a.diferencia))}</b></div>
+              <div style="font-size:11px;color:#fb923c">⚠️ La empresa gana <b style="color:#ef4444">${fmt(Math.abs(a.diferencia))}</b> menos de lo que le paga</div>
+              <div style="margin-top:4px;font-size:10px;color:#94a3b8">Necesita ~<b style="color:#f97316">${a.ventasFaltantes} venta${a.ventasFaltantes!==1?'s':''} más</b> para que su posición sea rentable</div>
               <div class="bar-wrap" style="margin-top:8px;height:6px">
-                <div class="bar-fill" style="width:${Math.min(100,(a.comVentas/a.sueldoMensual)*100).toFixed(0)}%;background:linear-gradient(90deg,#ef4444,#f97316)"></div>
+                <div class="bar-fill" style="width:${Math.min(100,a.porcentaje).toFixed(0)}%;background:linear-gradient(90deg,#ef4444,#f97316)"></div>
               </div>
-              <div style="font-size:10px;color:#64748b;margin-top:3px">${((a.comVentas/a.sueldoMensual)*100).toFixed(0)}% del sueldo cubierto</div>
+              <div style="font-size:10px;color:#64748b;margin-top:3px">${a.porcentaje.toFixed(0)}% del sueldo cubierto por comisiones</div>
             </div>
           </div>
         `).join('')}
