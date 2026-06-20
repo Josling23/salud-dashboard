@@ -304,8 +304,8 @@ tr:hover td{background:#162032}
         <div class="tbl-wrap">
           <table>
             <thead><tr>
-              <th>#</th><th>Cliente</th><th>Cuenta</th><th>Tipo</th><th>Prima</th>
-              <th>Com.Total</th><th>Adelanto</th><th>Final</th><th>Com.$8</th><th>Estado</th><th>Fecha</th>
+              <th>#</th><th>Cliente</th><th>Cuenta</th><th>Tipo</th><th>Prima/Mes</th>
+              <th>Com.Total</th><th>Adelanto(9m)</th><th>Final(3m)</th><th>Com.$8</th><th>Agente</th><th>Estado</th><th>Fecha</th><th>✕</th>
             </tr></thead>
             <tbody id="agente-ventas-body"></tbody>
           </table>
@@ -1030,20 +1030,38 @@ function renderAgenteVentas() {
   const body = document.getElementById('agente-ventas-body');
   body.innerHTML = list.length ? list.map((c,i)=>{
     const com = calcCom(c.prima);
+    const agenteOpts = getAgenteNombres().map(n=>`<option value="${n}" ${c.agente===n?'selected':''}>${n}</option>`).join('');
     return `<tr>
-      <td>${i+1}</td>
-      <td><b>${c.nombre}</b></td>
-      <td>${c.cuenta||'—'}</td>
-      <td><span class="badge badge-${c.tipo}">${c.tipo}</span></td>
-      <td>${fmt(c.prima)}/mo</td>
-      <td style="color:#38bdf8">${fmt(com.total)}</td>
+      <td style="color:#64748b">${i+1}</td>
+      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:12px;width:140px;font-weight:600" value="${c.nombre||''}" onchange="updateFieldRe(${c.id},'nombre',this.value)"></td>
+      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:90px" value="${c.cuenta||''}" onchange="updateFieldRe(${c.id},'cuenta',this.value)" placeholder="—"></td>
+      <td><select class="inline-sel" onchange="updateFieldRe(${c.id},'tipo',this.value)">
+        <option value="dental" ${c.tipo==='dental'?'selected':''}>Dental</option>
+        <option value="referido" ${c.tipo==='referido'?'selected':''}>Referido</option>
+        <option value="directo" ${c.tipo==='directo'?'selected':''}>Directo</option>
+        <option value="salud" ${c.tipo==='salud'?'selected':''}>Salud</option>
+      </select></td>
+      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:80px" type="number" step="0.01" value="${c.prima||''}" onchange="updateFieldRe(${c.id},'prima',parseFloat(this.value)||0)"></td>
+      <td style="color:#38bdf8;font-weight:700">${fmt(com.total)}</td>
       <td style="color:#22c55e">${fmt(com.adelanto)}</td>
       <td style="color:#f97316">${fmt(com.final)}</td>
       <td style="color:#a855f7">$8.00</td>
-      <td><span class="badge badge-${c.estado}">${c.estado}</span></td>
-      <td>${c.fecha||'—'}</td>
+      <td><select class="inline-sel" onchange="updateFieldRe(${c.id},'agente',this.value)">${agenteOpts}</select></td>
+      <td><select class="inline-sel" onchange="updateFieldRe(${c.id},'estado',this.value)">
+        <option value="activo" ${c.estado==='activo'?'selected':''}>Activo</option>
+        <option value="pendiente" ${c.estado==='pendiente'?'selected':''}>Pendiente</option>
+        <option value="cancelado" ${c.estado==='cancelado'?'selected':''}>Cancelado</option>
+      </select></td>
+      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:110px" type="date" value="${c.fecha||''}" onchange="updateFieldRe(${c.id},'fecha',this.value)"></td>
+      <td><button class="btn btn-danger btn-xs" onclick="eliminarCliente(${c.id});renderAgenteVentas()">✕</button></td>
     </tr>`;
-  }).join('') : '<tr><td colspan="11" class="tbl-empty">Sin ventas</td></tr>';
+  }).join('') : '<tr><td colspan="12" class="tbl-empty">Sin ventas</td></tr>';
+}
+
+function updateFieldRe(id, field, value) {
+  updateField(id, field, value);
+  // refresh com columns without full re-render
+  renderAgenteVentas();
 }
 
 function openAgenteModal(id=null) {
