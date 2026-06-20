@@ -634,12 +634,67 @@ let appData = {
   nextSueldoId: 1
 };
 
-// LOAD FROM localStorage
+// LOAD FROM localStorage — with migration from old format
 (function(){
   try {
     const s = localStorage.getItem('crmSaludDental_v2');
-    if(s) appData = JSON.parse(s);
-  } catch(e){}
+    if(s) {
+      appData = JSON.parse(s);
+      // ensure arrays exist
+      if(!appData.clientes) appData.clientes = [];
+      if(!appData.agentes) appData.agentes = [];
+      if(!appData.campanas) appData.campanas = [];
+      if(!appData.sueldos) appData.sueldos = [];
+      if(!appData.meses) appData.meses = [];
+      // normalize agente names (trim whitespace)
+      appData.clientes.forEach(c=>{ if(c.agente) c.agente = c.agente.trim(); });
+      appData.agentes.forEach(a=>{ if(a.nombre) a.nombre = a.nombre.trim(); });
+      return;
+    }
+    // Try migrating from old format
+    const old = localStorage.getItem('dashboardSalud');
+    if(old) {
+      const oldData = JSON.parse(old);
+      if(oldData.meses && typeof oldData.meses === 'object' && !Array.isArray(oldData.meses)) {
+        // old format: meses = { 'Mayo 2026': { ventas: [...] } }
+        const clientes = [];
+        let id = 1;
+        Object.entries(oldData.meses).forEach(([mes, mesData])=>{
+          (mesData.ventas||[]).forEach(v=>{
+            clientes.push({
+              id: id++,
+              nombre: v.nombre||'',
+              cuenta: v.cuenta||'',
+              tel: '', email: '',
+              agente: (v.agente||'Sin agente').trim(),
+              tipo: v.tipo||'referido',
+              prima: v.prima||0,
+              fecha: v.fecha||'',
+              fechaEfectiva: '',
+              estado: 'activo',
+              mes,
+              campana: '',
+              notas: '',
+              adelantoPagado: v.comPagada||false,
+              finalPagado: false,
+              comAgentePagada: false
+            });
+          });
+        });
+        appData.clientes = clientes;
+        if(oldData.agentes) appData.agentes = oldData.agentes.map((a,i)=>({
+          id: a.id||i+1,
+          nombre: (a.nombre||'').trim(),
+          sueldoQuincenal: a.sueldoQuincenal||400,
+          tel: '', email: '', activo: true
+        }));
+        appData.nextId = id;
+        appData.meses = Object.keys(oldData.meses);
+        if(oldData.roi) appData.campanas = [{ id:1, nombre:'EPICARE GO DENTAL', plataforma:'Meta Ads', gasto:oldData.roi.gasto||0, leads:oldData.roi.leads||0, inicio:'2026-06-01', estado:'activa', notas:'' }];
+        console.log('Migrated from old format:', clientes.length, 'clients');
+      }
+    }
+  } catch(e){ console.error('localStorage load error:', e); }
 })();
 
 function guardar() {
@@ -995,7 +1050,8 @@ function renderAgentes() {
   populateFilterAgente('filter-agente-page', false);
   const cards = document.getElementById('agent-cards');
   cards.innerHTML = appData.agentes.map(a=>{
-    const ventas = appData.clientes.filter(c=>c.agente===a.nombre);
+    const nombre = (a.nombre||'').trim().toLowerCase();
+    const ventas = appData.clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre);
     const activos = ventas.filter(c=>c.estado==='activo');
     const totalCom = activos.reduce((s,c)=>s+calcCom(c.prima).total,0);
     const adelantosPend = activos.filter(c=>!c.adelantoPagado).reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
