@@ -561,6 +561,10 @@ tr:hover td{background:#111928}
             <option value="">Ninguna / Orgánico</option>
           </select>
         </div>
+        <div class="form-group">
+          <label>💜 Com. Agente ($) <span style="font-size:10px;color:#4a6a8a">— Cuánto le pagas al vendedor por esta venta</span></label>
+          <input type="number" id="c-com-agente" placeholder="8.00" step="0.01" min="0" value="8" oninput="updateComPreview()">
+        </div>
       </div>
       <div class="form-group" style="margin-top:14px">
         <label>Notas</label>
@@ -573,7 +577,7 @@ tr:hover td{background:#111928}
           <div style="text-align:center"><div style="font-size:10px;color:#64748b">Total (30%×12m)</div><div style="font-weight:800;color:#38bdf8" id="prev-total">—</div></div>
           <div style="text-align:center"><div style="font-size:10px;color:#64748b">Cobras Ahora (9m)</div><div style="font-weight:800;color:#22c55e" id="prev-adelanto">—</div></div>
           <div style="text-align:center"><div style="font-size:10px;color:#64748b">Cobras Después (3m)</div><div style="font-weight:800;color:#f97316" id="prev-final">—</div></div>
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Com. Agente</div><div style="font-weight:800;color:#a855f7" id="prev-agente">$8.00</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Com. Agente</div><div style="font-weight:800;color:#a855f7" id="prev-agente">$8.00</div><div style="font-size:9px;color:#4a6a8a">editable arriba</div></div>
         </div>
       </div>
       <!-- PREVIEW COMISIÓN - SALUD -->
@@ -1191,6 +1195,8 @@ function openClienteModal(id=null) {
     document.getElementById('c-prima').value = c.prima||'';
     const residualEl = document.getElementById('c-residual');
     if(residualEl) residualEl.value = c.comResidualMensual||'';
+    const comAgEl = document.getElementById('c-com-agente');
+    if(comAgEl) comAgEl.value = c.comAgente !== undefined ? c.comAgente : 8;
     document.getElementById('c-fecha').value = c.fecha||'';
     document.getElementById('c-fecha-efectiva').value = c.fechaEfectiva||'';
     document.getElementById('c-estado').value = c.estado;
@@ -1207,6 +1213,8 @@ function openClienteModal(id=null) {
     document.getElementById('c-prima').value='';
     const residualEl2 = document.getElementById('c-residual');
     if(residualEl2) residualEl2.value='';
+    const comAgEl2 = document.getElementById('c-com-agente');
+    if(comAgEl2) comAgEl2.value = 8;
     document.getElementById('c-fecha').value=new Date().toISOString().split('T')[0];
     document.getElementById('c-fecha-efectiva').value='';
     document.getElementById('c-estado').value='activo';
@@ -1251,6 +1259,9 @@ function updateComPreview() {
     document.getElementById('prev-total').textContent    = fmt(com.total);
     document.getElementById('prev-adelanto').textContent = fmt(com.adelanto);
     document.getElementById('prev-final').textContent    = fmt(com.final);
+    const comAgVal = parseFloat(document.getElementById('c-com-agente')?.value)||8;
+    const prevAg = document.getElementById('prev-agente');
+    if(prevAg) prevAg.textContent = fmt(comAgVal);
   }
 }
 
@@ -1274,6 +1285,7 @@ function guardarCliente() {
     agente: document.getElementById('c-agente').value,
     prima: isSalud ? 0 : prima,
     comResidualMensual: isSalud ? residual : 0,
+    comAgente: parseFloat(document.getElementById('c-com-agente')?.value) || 8,
     fecha: document.getElementById('c-fecha').value,
     fechaEfectiva: document.getElementById('c-fecha-efectiva').value,
     estado: document.getElementById('c-estado').value,
