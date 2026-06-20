@@ -1388,14 +1388,23 @@ function renderResumen() {
   const totalAdelanto = activos.reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
   const totalFinal = activos.reduce((s,c)=>s+calcCom(c.prima).final,0);
   const comAgentes = clientes.length * 8;
+  const sueldosTotalesMes = appData.sueldos
+    .filter(s => { const mes2 = s.quincena||''; return true; }) // all sueldos (filter by mes if quincena contains mes)
+    .reduce((s,x)=>s+x.monto,0);
+  // Better: sum sueldos whose fecha falls in the selected month
+  const [mesMes, mesAnio] = mes.split(' ');
+  const mesNum = String(MESES_ES.indexOf(mesMes)+1).padStart(2,'0');
+  const sueldosMes = appData.sueldos.filter(s=> s.fecha && s.fecha.startsWith(`${mesAnio}-${mesNum}`)).reduce((s,x)=>s+x.monto,0);
+  const totalGastosMes = comAgentes + sueldosMes;
+  const gananciaNetoMes = totalAdelanto - totalGastosMes;
 
   document.getElementById('resumen-cards').innerHTML = `
     <div class="card blue"><label>Clientes del Mes</label><div class="val">${clientes.length}</div><div class="sub">${activos.length} activos</div></div>
-    <div class="card green"><label>Primas Totales</label><div class="val">${fmt(totalPrimas)}</div><div class="sub">/mes recurrente</div></div>
-    <div class="card purple"><label>Comisión Total</label><div class="val">${fmt(totalCom)}</div></div>
-    <div class="card teal"><label>Adelanto (9m)</label><div class="val">${fmt(totalAdelanto)}</div></div>
-    <div class="card orange"><label>Final (3m)</label><div class="val">${fmt(totalFinal)}</div></div>
-    <div class="card yellow"><label>Com. Agentes</label><div class="val">${fmt(comAgentes)}</div><div class="sub">$8 × ${clientes.length} ventas</div></div>
+    <div class="card green"><label>Adelanto a Cobrar (9m)</label><div class="val">${fmt(totalAdelanto)}</div><div class="sub">ingresos inmediatos</div></div>
+    <div class="card orange"><label>Final a Cobrar (3m)</label><div class="val">${fmt(totalFinal)}</div></div>
+    <div class="card yellow"><label>Com. Agentes ($8×venta)</label><div class="val">${fmt(comAgentes)}</div><div class="sub">${clientes.length} ventas</div></div>
+    <div class="card red"><label>Sueldos Pagados</label><div class="val">${fmt(sueldosMes)}</div><div class="sub">del mes</div></div>
+    <div class="card ${gananciaNetoMes>=0?'green':'red'}"><label>Ganancia Neta</label><div class="val">${fmt(gananciaNetoMes)}</div><div class="sub">adelanto − gastos</div></div>
   `;
 
   document.getElementById('resumen-table-wrap').innerHTML = clientes.length ? `
@@ -1437,23 +1446,59 @@ function renderResumen() {
   // AGENTES del mes
   const agentesDelMes = appData.agentes.map(a=>{
     const vMes = clientes.filter(c=>c.agente===a.nombre);
-    const sueldosMes = appData.sueldos.filter(s=>s.agenteNombre===a.nombre).reduce((t,s)=>t+s.monto,0);
+    const sueldosPagados = appData.sueldos.filter(s=>s.agenteNombre===a.nombre && s.fecha && s.fecha.startsWith(`${mesAnio}-${mesNum}`));
+    const totalSueldos = sueldosPagados.reduce((t,s)=>t+s.monto,0);
     const comEmpresa = vMes.reduce((s,c)=>s+calcCom(c.prima).total,0);
     const comAg = vMes.length*8;
-    return { ...a, vMes:vMes.length, sueldosMes, comEmpresa, comAg };
+    const totalPagarAgente = comAg + totalSueldos;
+    return { ...a, vMes:vMes.length, totalSueldos, comEmpresa, comAg, totalPagarAgente, sueldosPagados };
   });
+  const totalComAg = agentesDelMes.reduce((s,a)=>s+a.comAg,0);
+  const totalSueldosTodos = agentesDelMes.reduce((s,a)=>s+a.totalSueldos,0);
+  const totalPagarTodos = agentesDelMes.reduce((s,a)=>s+a.totalPagarAgente,0);
+
   document.getElementById('resumen-agentes-table').innerHTML = `
     <table>
-      <thead><tr><th>Agente</th><th>Ventas en ${mes}</th><th>Com.Empresa Generada</th><th>Com.$8 a Pagar</th><th>Sueldo Quincenal</th><th>Total Pagado (sueldos)</th></tr></thead>
-      <tbody>${agentesDelMes.map(a=>`<tr>
-        <td><b>${a.nombre}</b></td>
-        <td style="color:#3b82f6">${a.vMes}</td>
-        <td style="color:#a855f7">${fmt(a.comEmpresa)}</td>
-        <td style="color:#22c55e">${fmt(a.comAg)}</td>
-        <td>${fmt(a.sueldoQuincenal)}/quinc.</td>
-        <td style="color:#22c55e">${fmt(a.sueldosMes)}</td>
-      </tr>`).join('')}</tbody>
-    </table>`;
+      <thead><tr>
+        <th>Agente</th>
+        <th>Ventas en ${mes}</th>
+        <th>Com. Empresa Generada</th>
+        <th>Com. $8 por Ventas</th>
+        <th>Sueldo Quincenal (ref.)</th>
+        <th>Sueldos Pagados en ${mes}</th>
+        <th>Quincenas Registradas</th>
+        <th style="color:#ef4444">TOTAL PAGADO AL AGENTE</th>
+      </tr></thead>
+      <tbody>
+        ${agentesDelMes.map(a=>`<tr>
+          <td><b>${a.nombre}</b></td>
+          <td style="color:#3b82f6;font-weight:700">${a.vMes}</td>
+          <td style="color:#a855f7">${fmt(a.comEmpresa)}</td>
+          <td style="color:#22c55e;font-weight:700">${fmt(a.comAg)}</td>
+          <td style="color:#64748b">${fmt(a.sueldoQuincenal)}/quinc.</td>
+          <td style="color:#f97316;font-weight:700">${fmt(a.totalSueldos)}</td>
+          <td style="font-size:11px;color:#64748b">${a.sueldosPagados.map(s=>`${s.quincena||s.fecha}: ${fmt(s.monto)}`).join('<br>') || '—'}</td>
+          <td style="color:#ef4444;font-weight:800;font-size:14px">${fmt(a.totalPagarAgente)}</td>
+        </tr>`).join('')}
+        <tr style="background:#0f172a;font-weight:700;border-top:2px solid #334155">
+          <td colspan="3" style="text-align:right;color:#64748b">TOTALES DEL MES:</td>
+          <td style="color:#22c55e">${fmt(totalComAg)}</td>
+          <td></td>
+          <td style="color:#f97316">${fmt(totalSueldosTodos)}</td>
+          <td></td>
+          <td style="color:#ef4444;font-size:15px">${fmt(totalPagarTodos)}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="background:#0f172a;border-radius:10px;padding:16px;margin-top:16px;display:flex;gap:24px;flex-wrap:wrap">
+      <div><div style="font-size:11px;color:#64748b">💵 Adelanto que cobras (9m)</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmt(totalAdelanto)}</div></div>
+      <div style="color:#334155;font-size:24px;display:flex;align-items:center">−</div>
+      <div><div style="font-size:11px;color:#64748b">💸 Com. $8 agentes</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmt(totalComAg)}</div></div>
+      <div style="color:#334155;font-size:24px;display:flex;align-items:center">−</div>
+      <div><div style="font-size:11px;color:#64748b">💸 Sueldos pagados</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmt(totalSueldosTodos)}</div></div>
+      <div style="color:#334155;font-size:24px;display:flex;align-items:center">=</div>
+      <div><div style="font-size:11px;color:#64748b">✅ GANANCIA NETA DEL MES</div><div style="font-size:24px;font-weight:800;color:${gananciaNetoMes>=0?'#22c55e':'#ef4444'}">${fmt(gananciaNetoMes)}</div></div>
+    </div>`;
 }
 
 function exportResumen() {
