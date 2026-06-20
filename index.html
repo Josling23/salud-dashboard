@@ -228,6 +228,9 @@ tr:hover td{background:#111928}
     <div class="nav-item" onclick="showPage('pagos')">
       <span class="icon">💳</span><span>Pagos Agentes</span>
     </div>
+    <div class="nav-item" onclick="showPage('chargebacks')">
+      <span class="icon">⚠️</span><span>Chargebacks</span>
+    </div>
   </nav>
   <div class="sidebar-footer">Dealer #594193</div>
 </aside>
@@ -430,6 +433,40 @@ tr:hover td{background:#111928}
       <div class="section">
         <div class="section-header"><h2>👨‍💼 Sueldos & Comisiones Agentes del Mes</h2></div>
         <div id="resumen-agentes-table"></div>
+      </div>
+    </div>
+
+    <!-- ========== CHARGEBACKS ========== -->
+    <div class="page" id="page-chargebacks">
+      <div class="cards" id="cb-cards"></div>
+      <div class="section">
+        <div class="section-header">
+          <h2>⚠️ Clientes con Chargeback</h2>
+          <div style="display:flex;gap:8px">
+            <select id="cb-filter-mes" class="inline-sel" style="padding:7px 12px;font-size:12px" onchange="renderChargebacks()">
+              <option value="">Todos los Meses</option>
+            </select>
+            <select id="cb-filter-agente" class="inline-sel" style="padding:7px 12px;font-size:12px" onchange="renderChargebacks()">
+              <option value="">Todos los Agentes</option>
+            </select>
+          </div>
+        </div>
+        <div style="background:#1c0a00;border:1px solid #9a3412;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#fb923c;line-height:1.6">
+          <b>¿Cómo funciona?</b> Cuando un cliente deja de pagar, márcalo como Chargeback, indica el mes en que dejó de pagar y cuántos meses pagó antes de cancelar.
+          El sistema calcula automáticamente cuánto debes devolver: <b>(9 meses adelantados − meses pagados) × comisión mensual</b>.
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th>#</th><th>Cliente</th><th>Cuenta</th><th>Agente</th><th>Tipo</th>
+              <th>Prima/Mes</th><th>Adelanto Recibido (9m)</th>
+              <th>Meses Pagados por Cliente</th><th>Mes que Canceló</th>
+              <th>Chargeback a Devolver</th><th>Com. Agente a Recuperar</th>
+              <th>Mes Origen</th><th>Estado CB</th><th>Acciones</th>
+            </tr></thead>
+            <tbody id="cb-body"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -645,6 +682,61 @@ tr:hover td{background:#111928}
   </div>
 </div>
 
+<!-- MODAL CHARGEBACK -->
+<div class="modal-overlay" id="modal-chargeback">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3>⚠️ Registrar Chargeback</h3>
+      <button class="modal-close" onclick="closeModal('modal-chargeback')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="cb-cliente-info" style="background:#080c14;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px"></div>
+      <div class="form-grid cols1">
+        <div class="form-group">
+          <label>Mes que Dejó de Pagar</label>
+          <input type="month" id="cb-mes-cancel">
+        </div>
+        <div class="form-group">
+          <label>Meses que el Cliente Pagó (antes de cancelar)</label>
+          <input type="number" id="cb-meses-pagados" min="0" max="9" placeholder="Ej: 3" oninput="updateCBPreview()">
+          <span style="font-size:11px;color:#4a6a8a">De los 9 meses adelantados, ¿cuántos pagó?</span>
+        </div>
+        <div class="form-group">
+          <label>Notas del Chargeback</label>
+          <textarea id="cb-notas" placeholder="Razón de cancelación, acuerdos, etc..."></textarea>
+        </div>
+      </div>
+      <div id="cb-preview" style="background:#1c0a00;border:1px solid #9a3412;border-radius:10px;padding:14px;margin-top:12px;display:none">
+        <div style="font-size:11px;color:#fb923c;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Cálculo del Chargeback</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:#0a0e1a;border-radius:7px;padding:10px">
+            <div style="font-size:10px;color:#4a6a8a">Adelanto recibido (9m)</div>
+            <div style="font-weight:800;color:#22c55e;font-size:15px" id="cb-prev-adelanto">—</div>
+          </div>
+          <div style="background:#0a0e1a;border-radius:7px;padding:10px">
+            <div style="font-size:10px;color:#4a6a8a">Meses pagados × com.</div>
+            <div style="font-weight:800;color:#1a9fe3;font-size:15px" id="cb-prev-pagado">—</div>
+          </div>
+          <div style="background:#0a0e1a;border-radius:7px;padding:10px">
+            <div style="font-size:10px;color:#4a6a8a">Meses a devolver</div>
+            <div style="font-weight:800;color:#f97316;font-size:15px" id="cb-prev-meses">—</div>
+          </div>
+          <div style="background:#1c0a00;border-radius:7px;padding:10px;border:1px solid #9a3412">
+            <div style="font-size:10px;color:#fb923c">⚠️ DEBES DEVOLVER</div>
+            <div style="font-weight:800;color:#ef4444;font-size:18px" id="cb-prev-devolver">—</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #9a3412;font-size:11px;color:#fb923c" id="cb-prev-agente-note"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-chargeback')">Cancelar</button>
+      <button class="btn btn-danger" onclick="guardarChargeback()">⚠️ Registrar Chargeback</button>
+      <button class="btn btn-ghost" id="cb-quitar-btn" style="display:none" onclick="quitarChargeback()">✕ Quitar Chargeback</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // DATA STORE
@@ -780,7 +872,8 @@ function showNotif(msg, type='success') {
 const PAGE_TITLES = {
   dashboard:'Dashboard', clientes:'Clientes', agentes:'Agentes',
   comisiones:'Comisiones', campanas:'Campañas ROI', resumen:'Resumen Mensual',
-  pagos:'Pagos Agentes'
+  pagos:'Pagos Agentes',
+  chargebacks:'Chargebacks'
 };
 
 function showPage(name) {
@@ -800,6 +893,7 @@ function renderPage(name) {
   if(name==='campanas') renderCampanas();
   if(name==='resumen') renderResumen();
   if(name==='pagos') renderPagos();
+  if(name==='chargebacks') renderChargebacks();
 }
 
 // ============================================================
@@ -999,8 +1093,9 @@ function renderClientes() {
       <td>${c.fecha||'—'}</td>
       <td>${c.mes}</td>
       <td class="note-cell" title="${c.notas||''}">${c.notas||'—'}</td>
-      <td style="display:flex;gap:4px">
+      <td style="display:flex;gap:4px;flex-wrap:wrap">
         <button class="btn btn-ghost btn-xs" onclick="openClienteModal(${c.id})">✏️</button>
+        <button class="btn btn-xs" style="background:${c.esChargeback?'#422006':'#1c0a00'};color:${c.esChargeback?'#fb923c':'#64748b'};border:1px solid ${c.esChargeback?'#9a3412':'#334155'}" onclick="openChargebackModal(${c.id})" title="Marcar Chargeback">⚠️</button>
         <button class="btn btn-danger btn-xs" onclick="eliminarCliente(${c.id})">✕</button>
       </td>
     </tr>`;
@@ -2232,6 +2327,166 @@ function openSueldoModalAgente(nombreAgente) {
       }
     }
   }, 50);
+}
+
+// ============================================================
+// CHARGEBACKS
+// ============================================================
+let cbClienteId = null;
+
+function calcChargeback(prima, mesesPagados) {
+  const comMensual = prima * 0.30;             // comisión por mes
+  const adelanto = calcCom(prima).adelanto;    // total adelantado (9m)
+  const ganado = comMensual * mesesPagados;    // lo que realmente ganaste
+  const devolver = Math.max(0, adelanto - ganado);
+  return { adelanto, ganado, devolver, mesesDevolver: Math.max(0, 9 - mesesPagados) };
+}
+
+function openChargebackModal(id) {
+  cbClienteId = id;
+  const c = appData.clientes.find(x=>x.id===id);
+  if(!c) return;
+  const com = calcCom(c.prima);
+  document.getElementById('cb-cliente-info').innerHTML = `
+    <div style="font-weight:700;color:#e8f0fe;margin-bottom:4px">👤 ${c.nombre}</div>
+    <div style="color:#4a6a8a;font-size:12px">Cuenta: ${c.cuenta||'—'} &nbsp;·&nbsp; Agente: ${c.agente} &nbsp;·&nbsp; Prima: ${fmt(c.prima)}/mes</div>
+    <div style="color:#4a6a8a;font-size:12px;margin-top:2px">Adelanto (9m): <b style="color:#22c55e">${fmt(com.adelanto)}</b> &nbsp;·&nbsp; Com. mensual: <b style="color:#1a9fe3">${fmt(c.prima*0.30)}</b></div>
+  `;
+  document.getElementById('cb-meses-pagados').value = c.mesesPagados !== undefined ? c.mesesPagados : '';
+  document.getElementById('cb-mes-cancel').value = c.mesCancelacion || '';
+  document.getElementById('cb-notas').value = c.notasChargeback || '';
+  document.getElementById('cb-quitar-btn').style.display = c.esChargeback ? 'inline-flex' : 'none';
+  updateCBPreview();
+  document.getElementById('modal-chargeback').classList.add('open');
+}
+
+function updateCBPreview() {
+  const c = appData.clientes.find(x=>x.id===cbClienteId);
+  if(!c) return;
+  const meses = parseInt(document.getElementById('cb-meses-pagados').value);
+  const prev = document.getElementById('cb-preview');
+  if(isNaN(meses) || meses < 0) { prev.style.display='none'; return; }
+  prev.style.display='block';
+  const cb = calcChargeback(c.prima, meses);
+  document.getElementById('cb-prev-adelanto').textContent = fmt(cb.adelanto);
+  document.getElementById('cb-prev-pagado').textContent = fmt(cb.ganado) + ` (${meses}m)`;
+  document.getElementById('cb-prev-meses').textContent = `${cb.mesesDevolver} mes${cb.mesesDevolver!==1?'es':''}`;
+  document.getElementById('cb-prev-devolver').textContent = fmt(cb.devolver);
+  // Note sobre agente: si el agente ya cobró la com.$8, también hay que recuperarla
+  const comAg = c.comAgente !== undefined ? c.comAgente : 8;
+  document.getElementById('cb-prev-agente-note').innerHTML = c.comAgentePagada
+    ? `💡 La comisión de $${comAg.toFixed(2)} del agente <b>${c.agente}</b> ya fue pagada — considera recuperarla también.`
+    : `✅ La comisión del agente aún no fue pagada — no hay que recuperarla.`;
+}
+
+function guardarChargeback() {
+  const c = appData.clientes.find(x=>x.id===cbClienteId);
+  if(!c) return;
+  const meses = parseInt(document.getElementById('cb-meses-pagados').value);
+  if(isNaN(meses) || meses < 0) { showNotif('⚠️ Ingresa los meses pagados','error'); return; }
+  const cb = calcChargeback(c.prima, meses);
+  c.esChargeback = true;
+  c.mesesPagados = meses;
+  c.mesCancelacion = document.getElementById('cb-mes-cancel').value;
+  c.notasChargeback = document.getElementById('cb-notas').value.trim();
+  c.chargebackMonto = cb.devolver;
+  c.estado = 'cancelado';
+  guardar();
+  closeModal('modal-chargeback');
+  renderClientes();
+  showNotif('⚠️ Chargeback registrado — ' + fmt(cb.devolver) + ' a devolver');
+}
+
+function quitarChargeback() {
+  const c = appData.clientes.find(x=>x.id===cbClienteId);
+  if(!c) return;
+  if(!confirm('¿Quitar el chargeback de este cliente?')) return;
+  c.esChargeback = false;
+  c.mesesPagados = undefined;
+  c.mesCancelacion = '';
+  c.chargebackMonto = 0;
+  c.estado = 'activo';
+  guardar();
+  closeModal('modal-chargeback');
+  renderClientes();
+  showNotif('✅ Chargeback removido');
+}
+
+function renderChargebacks() {
+  populateFilterMes('cb-filter-mes');
+  populateFilterAgente('cb-filter-agente', false);
+
+  const fMes = document.getElementById('cb-filter-mes')?.value||'';
+  const fAgente = document.getElementById('cb-filter-agente')?.value||'';
+
+  const cbs = appData.clientes.filter(c=>{
+    if(!c.esChargeback) return false;
+    if(fMes && c.mes!==fMes) return false;
+    if(fAgente && c.agente!==fAgente) return false;
+    return true;
+  });
+
+  // Cards
+  const totalCBMonto = cbs.reduce((s,c)=>s+(c.chargebackMonto||0),0);
+  const totalAdelantoOriginal = cbs.reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+  const comAgRecuperar = cbs.filter(c=>c.comAgentePagada).reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+  const totalPerdida = totalCBMonto + comAgRecuperar;
+  // Impacto en comisión: lo que quedó = adelanto - chargeback
+  const netoReal = cbs.reduce((s,c)=>s+(calcCom(c.prima).adelanto-(c.chargebackMonto||0)),0);
+
+  document.getElementById('cb-cards').innerHTML = `
+    <div class="card red"><label>Chargebacks Totales</label><div class="val">${cbs.length}</div><div class="sub">clientes cancelados</div></div>
+    <div class="card orange"><label>Total a Devolver</label><div class="val">${fmt(totalCBMonto)}</div><div class="sub">comisión a retornar</div></div>
+    <div class="card yellow"><label>Com. Agente a Recuperar</label><div class="val">${fmt(comAgRecuperar)}</div><div class="sub">agentes ya cobrados</div></div>
+    <div class="card red"><label>Pérdida Total</label><div class="val">${fmt(totalPerdida)}</div><div class="sub">devolución + com.agente</div></div>
+    <div class="card blue"><label>Adelanto Original</label><div class="val">${fmt(totalAdelantoOriginal)}</div><div class="sub">lo que recibiste</div></div>
+    <div class="card ${netoReal>=0?'green':'red'}"><label>Neto Real Retenido</label><div class="val">${fmt(netoReal)}</div><div class="sub">adelanto − devolución</div></div>
+  `;
+
+  const body = document.getElementById('cb-body');
+  body.innerHTML = cbs.length ? cbs.map((c,i)=>{
+    const com = calcCom(c.prima);
+    const cb = calcChargeback(c.prima, c.mesesPagados||0);
+    const comAg = c.comAgente!==undefined?c.comAgente:8;
+    return `<tr style="background:rgba(239,68,68,0.06);border-left:3px solid #ef4444">
+      <td style="color:#4a6a8a">${i+1}</td>
+      <td>
+        <b style="color:#ef4444">${c.nombre}</b>
+        ${c.notasChargeback?`<br><span style="font-size:10px;color:#4a6a8a">${c.notasChargeback}</span>`:''}
+      </td>
+      <td>${c.cuenta||'—'}</td>
+      <td>${c.agente}</td>
+      <td><span class="badge badge-${c.tipo}">${c.tipo}</span></td>
+      <td>${fmt(c.prima)}</td>
+      <td style="color:#22c55e;font-weight:700">${fmt(com.adelanto)}</td>
+      <td>
+        <input type="number" min="0" max="9" style="background:#080c14;border:1px solid #1e2d45;color:#e8f0fe;padding:3px 8px;border-radius:5px;font-size:12px;width:60px;text-align:center"
+          value="${c.mesesPagados||0}"
+          onchange="actualizarMesesPagados(${c.id},parseInt(this.value))">
+        <span style="font-size:10px;color:#4a6a8a"> / 9m</span>
+      </td>
+      <td style="color:#f97316">${c.mesCancelacion ? c.mesCancelacion.replace('-','/'): '—'}</td>
+      <td style="font-weight:800;font-size:14px;color:#ef4444">${fmt(cb.devolver)}
+        <div style="font-size:9px;color:#4a6a8a">${cb.mesesDevolver}m × ${fmt(c.prima*0.30)}</div>
+      </td>
+      <td style="color:${c.comAgentePagada?'#ef4444':'#22c55e'};font-weight:700">
+        ${c.comAgentePagada ? fmt(comAg)+' ⚠️' : '✅ No pagada'}
+      </td>
+      <td>${c.mes}</td>
+      <td><span class="badge badge-cancelado">CHARGEBACK</span></td>
+      <td><button class="btn btn-ghost btn-xs" onclick="openChargebackModal(${c.id})">✏️ Editar</button></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="14" class="tbl-empty">✅ Sin chargebacks registrados</td></tr>';
+}
+
+function actualizarMesesPagados(id, meses) {
+  const c = appData.clientes.find(x=>x.id===id);
+  if(!c || isNaN(meses)) return;
+  c.mesesPagados = Math.max(0, Math.min(9, meses));
+  c.chargebackMonto = calcChargeback(c.prima, c.mesesPagados).devolver;
+  guardar();
+  renderChargebacks();
+  showNotif('✅ Chargeback actualizado');
 }
 
 // ============================================================
