@@ -5,37 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRM Salud & Dental — American Insurance</title>
 <style>
-/* === AMERICAN INSURANCE BRAND COLORS ===
-   Primary Blue : #1a9fe3 / #0d8fd4
-   Dark Navy    : #0a0e1a
-   Card BG      : #0f1624
-   Surface      : #151d2e
-   Border       : #1e2d45
-   Text         : #e8f0fe
+/* === HUBSPOT-STYLE PALETTE ===
+   Primary Orange : #FF7A59
+   Sidebar Slate  : #33475B
+   Body BG        : #F5F8FA
+   Card BG        : #FFFFFF
+   Border         : #CBD6E2
+   Text Primary   : #33475B
+   Text Muted     : #7C98B6
+   Green          : #00BDA5
+   Red            : #F2545B
+   Purple         : #6A78D1
+   Yellow         : #F5C26B
+   Blue           : #0091AE
 */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#0a0e1a;color:#e8f0fe;min-height:100vh;display:flex;flex-direction:column}
+body{font-family:'Segoe UI',sans-serif;background:#F5F8FA;color:#33475B;min-height:100vh;display:flex;flex-direction:column}
 
 /* SIDEBAR LAYOUT */
 .app-wrap{display:flex;flex:1;min-height:100vh}
-.sidebar{width:230px;background:#0f1624;border-right:1px solid #1e2d45;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
-.sidebar-logo{padding:0;border-bottom:1px solid #1e2d45;background:linear-gradient(135deg,#0d8fd4,#1a9fe3,#0a6fa8);text-align:center}
+.sidebar{width:230px;background:#33475B;border-right:none;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;box-shadow:2px 0 8px rgba(0,0,0,0.12)}
+.sidebar-logo{padding:0;border-bottom:1px solid rgba(255,255,255,0.1);background:linear-gradient(135deg,#FF7A59,#FF5733,#E05530);text-align:center}
 .sidebar-logo-inner{padding:20px 16px 16px}
 .sidebar-logo svg{width:72px;height:72px;margin:0 auto 10px;display:block}
 .sidebar-logo h1{font-size:13px;font-weight:800;color:#fff;letter-spacing:1px;text-transform:uppercase}
 .sidebar-logo p{font-size:10px;color:rgba(255,255,255,0.7);margin-top:3px;font-style:italic}
 .sidebar-nav{flex:1;padding:10px 0;overflow-y:auto}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;font-size:13px;font-weight:600;color:#7a9cc0;transition:all 0.15s;border-left:3px solid transparent}
-.nav-item:hover{background:#151d2e;color:#e8f0fe}
-.nav-item.active{background:#151d2e;color:#1a9fe3;border-left-color:#1a9fe3}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;cursor:pointer;font-size:13px;font-weight:600;color:rgba(255,255,255,0.6);transition:all 0.15s;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,0.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,0.12);color:#FF7A59;border-left-color:#FF7A59}
 .nav-item .icon{font-size:16px;width:20px;text-align:center}
-.sidebar-footer{padding:14px 18px;border-top:1px solid #1e2d45;font-size:10px;color:#2a4a6a;text-align:center}
+.sidebar-footer{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.1);font-size:10px;color:rgba(255,255,255,0.3);text-align:center}
 
 .main{margin-left:230px;flex:1;display:flex;flex-direction:column}
-.topbar{background:#0f1624;border-bottom:1px solid #1e2d45;padding:13px 28px;display:flex;justify-content:space-between;align-items:center}
-.topbar h2{font-size:16px;font-weight:700;color:#e8f0fe}
+.topbar{background:#FFFFFF;border-bottom:1px solid #CBD6E2;padding:13px 28px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.topbar h2{font-size:16px;font-weight:700;color:#33475B}
 .topbar-right{display:flex;gap:10px;align-items:center}
-.badge-dealer{background:linear-gradient(90deg,#0d8fd4,#1a9fe3);color:#fff;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px}
+.badge-dealer{background:linear-gradient(90deg,#FF7A59,#FF5733);color:#fff;padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px}
 
 .content{padding:24px 28px;flex:1}
 .page{display:none}
@@ -43,122 +49,122 @@ body{font-family:'Segoe UI',sans-serif;background:#0a0e1a;color:#e8f0fe;min-heig
 
 /* CARDS */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
-.card{background:#0f1624;border-radius:12px;padding:18px;border-left:4px solid #1e2d45;border-top:1px solid #1e2d45}
-.card label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#4a6a8a;display:block}
+.card{background:#FFFFFF;border-radius:12px;padding:18px;border-left:4px solid #CBD6E2;border-top:1px solid #CBD6E2;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#7C98B6;display:block}
 .card .val{font-size:22px;font-weight:800;margin-top:6px}
-.card .sub{font-size:11px;color:#4a6a8a;margin-top:3px}
-.card.blue{border-color:#1a9fe3}.card.blue .val{color:#1a9fe3}
-.card.green{border-color:#22c55e}.card.green .val{color:#22c55e}
-.card.purple{border-color:#a855f7}.card.purple .val{color:#a855f7}
-.card.orange{border-color:#f97316}.card.orange .val{color:#f97316}
-.card.red{border-color:#ef4444}.card.red .val{color:#ef4444}
-.card.yellow{border-color:#eab308}.card.yellow .val{color:#eab308}
-.card.teal{border-color:#14b8a6}.card.teal .val{color:#14b8a6}
+.card .sub{font-size:11px;color:#7C98B6;margin-top:3px}
+.card.blue{border-color:#0091AE}.card.blue .val{color:#0091AE}
+.card.green{border-color:#00BDA5}.card.green .val{color:#00BDA5}
+.card.purple{border-color:#6A78D1}.card.purple .val{color:#6A78D1}
+.card.orange{border-color:#FF7A59}.card.orange .val{color:#FF7A59}
+.card.red{border-color:#F2545B}.card.red .val{color:#F2545B}
+.card.yellow{border-color:#F5C26B}.card.yellow .val{color:#F5C26B}
+.card.teal{border-color:#00BDA5}.card.teal .val{color:#00BDA5}
 
 /* SECTION */
-.section{background:#0f1624;border-radius:12px;padding:22px;margin-bottom:20px;border:1px solid #1e2d45}
+.section{background:#FFFFFF;border-radius:12px;padding:22px;margin-bottom:20px;border:1px solid #CBD6E2;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
 .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
-.section h2{font-size:14px;font-weight:700;color:#e8f0fe}
+.section h2{font-size:14px;font-weight:700;color:#33475B}
 
 /* BUTTONS */
 .btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px}
-.btn-primary{background:linear-gradient(135deg,#0d8fd4,#1a9fe3);color:#fff;box-shadow:0 2px 8px rgba(26,159,227,0.3)}.btn-primary:hover{background:linear-gradient(135deg,#0a7ab8,#0d8fd4)}
-.btn-success{background:#22c55e;color:#fff}.btn-success:hover{background:#16a34a}
-.btn-danger{background:#ef4444;color:#fff}.btn-danger:hover{background:#dc2626}
-.btn-ghost{background:#151d2e;color:#7a9cc0;border:1px solid #1e2d45}.btn-ghost:hover{background:#1e2d45;color:#e8f0fe}
-.btn-outline{background:none;border:1.5px solid #1e2d45;color:#7a9cc0}.btn-outline:hover{border-color:#1a9fe3;color:#1a9fe3}
+.btn-primary{background:linear-gradient(135deg,#FF7A59,#FF5733);color:#fff;box-shadow:0 2px 8px rgba(255,122,89,0.35)}.btn-primary:hover{background:linear-gradient(135deg,#E66E50,#D45E30)}
+.btn-success{background:#00BDA5;color:#fff}.btn-success:hover{background:#00A492}
+.btn-danger{background:#F2545B;color:#fff}.btn-danger:hover{background:#E04048}
+.btn-ghost{background:#F5F8FA;color:#7C98B6;border:1px solid #CBD6E2}.btn-ghost:hover{background:#EAF0FB;color:#33475B}
+.btn-outline{background:none;border:1.5px solid #CBD6E2;color:#7C98B6}.btn-outline:hover{border-color:#FF7A59;color:#FF7A59}
 .btn-sm{padding:5px 10px;font-size:11px;border-radius:6px}
 .btn-xs{padding:3px 8px;font-size:10px;border-radius:5px}
 
 /* TABLE */
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:#080c14;color:#4a6a8a;text-transform:uppercase;font-size:10px;letter-spacing:0.5px;padding:10px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid #1e2d45}
-td{padding:9px 12px;border-bottom:1px solid #0f1624;vertical-align:middle;white-space:nowrap}
-tr:hover td{background:#111928}
-.tbl-empty{text-align:center;color:#2a4a6a;padding:32px;font-size:13px}
+th{background:#F5F8FA;color:#7C98B6;text-transform:uppercase;font-size:10px;letter-spacing:0.5px;padding:10px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid #CBD6E2}
+td{padding:9px 12px;border-bottom:1px solid #F5F8FA;vertical-align:middle;white-space:nowrap;color:#33475B}
+tr:hover td{background:#EAF0FB}
+.tbl-empty{text-align:center;color:#99ACC2;padding:32px;font-size:13px}
 
 /* BADGES */
 .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
-.badge-activo{background:#052e16;color:#4ade80;border:1px solid #166534}
-.badge-pendiente{background:#422006;color:#fb923c;border:1px solid #9a3412}
-.badge-cancelado{background:#1c0e0e;color:#f87171;border:1px solid #7f1d1d}
-.badge-dental{background:#051e38;color:#60c4f8;border:1px solid #0d8fd4}
-.badge-referido{background:#1a2e1a;color:#86efac;border:1px solid #166534}
-.badge-directo{background:#2e1b4e;color:#c4b5fd;border:1px solid #6d28d9}
-.badge-salud{background:#1a2e2e;color:#5eead4;border:1px solid #0d9488}
-.badge-paid{background:#052e16;color:#4ade80;border:1px solid #166534}
-.badge-pending{background:#1c1a05;color:#facc15;border:1px solid #854d0e}
+.badge-activo{background:#E8F9F7;color:#00A492;border:1px solid #00BDA5}
+.badge-pendiente{background:#FFF3EE;color:#E66E50;border:1px solid #FF7A59}
+.badge-cancelado{background:#FFF0F0;color:#E04048;border:1px solid #F2545B}
+.badge-dental{background:#EAF7FB;color:#0091AE;border:1px solid #0091AE}
+.badge-referido{background:#E8F9F7;color:#00A492;border:1px solid #00BDA5}
+.badge-directo{background:#F0EDFF;color:#6A78D1;border:1px solid #6A78D1}
+.badge-salud{background:#E8F9F7;color:#00A492;border:1px solid #00BDA5}
+.badge-paid{background:#E8F9F7;color:#00A492;border:1px solid #00BDA5}
+.badge-pending{background:#FFFBE8;color:#D4A017;border:1px solid #F5C26B}
 
 /* SEARCH / FILTERS */
 .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-.filters input,.filters select{background:#080c14;border:1px solid #1e2d45;color:#e8f0fe;padding:7px 12px;border-radius:8px;font-size:12px;outline:none}
-.filters input:focus,.filters select:focus{border-color:#1a9fe3}
+.filters input,.filters select{background:#FFFFFF;border:1px solid #CBD6E2;color:#33475B;padding:7px 12px;border-radius:8px;font-size:12px;outline:none}
+.filters input:focus,.filters select:focus{border-color:#FF7A59}
 .filters input{min-width:200px}
 
 /* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,5,15,0.85);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay{position:fixed;inset:0;background:rgba(51,71,91,0.55);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
-.modal{background:#0f1624;border-radius:14px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;border:1px solid #1e2d45}
-.modal-header{padding:20px 24px;border-bottom:1px solid #1e2d45;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#080c14,#0f1624)}
-.modal-header h3{font-size:15px;font-weight:700;color:#e8f0fe}
-.modal-close{background:none;border:none;color:#4a6a8a;font-size:20px;cursor:pointer;padding:4px;line-height:1}.modal-close:hover{color:#e8f0fe}
+.modal{background:#FFFFFF;border-radius:14px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;border:1px solid #CBD6E2;box-shadow:0 8px 30px rgba(0,0,0,0.15)}
+.modal-header{padding:20px 24px;border-bottom:1px solid #CBD6E2;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#F5F8FA,#FFFFFF)}
+.modal-header h3{font-size:15px;font-weight:700;color:#33475B}
+.modal-close{background:none;border:none;color:#7C98B6;font-size:20px;cursor:pointer;padding:4px;line-height:1}.modal-close:hover{color:#33475B}
 .modal-body{padding:24px}
-.modal-footer{padding:16px 24px;border-top:1px solid #1e2d45;display:flex;justify-content:flex-end;gap:10px}
+.modal-footer{padding:16px 24px;border-top:1px solid #CBD6E2;display:flex;justify-content:flex-end;gap:10px}
 
 /* FORM */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-grid.cols1{grid-template-columns:1fr}
 .form-group{display:flex;flex-direction:column;gap:6px}
-.form-group label{font-size:11px;font-weight:600;color:#7a9cc0;text-transform:uppercase;letter-spacing:0.5px}
-.form-group input,.form-group select,.form-group textarea{background:#080c14;border:1.5px solid #1e2d45;color:#e8f0fe;padding:9px 12px;border-radius:8px;font-size:13px;outline:none;width:100%;font-family:inherit}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#1a9fe3;box-shadow:0 0 0 3px rgba(26,159,227,0.1)}
+.form-group label{font-size:11px;font-weight:600;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px}
+.form-group input,.form-group select,.form-group textarea{background:#FFFFFF;border:1.5px solid #CBD6E2;color:#33475B;padding:9px 12px;border-radius:8px;font-size:13px;outline:none;width:100%;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#FF7A59;box-shadow:0 0 0 3px rgba(255,122,89,0.12)}
 .form-group textarea{resize:vertical;min-height:70px}
-.form-group select option{background:#0f1624}
+.form-group select option{background:#FFFFFF;color:#33475B}
 
 /* AGENT CARDS */
 .agent-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:20px}
-.agent-card{background:#080c14;border-radius:12px;padding:20px;border:1px solid #1e2d45}
+.agent-card{background:#F5F8FA;border-radius:12px;padding:20px;border:1px solid #CBD6E2}
 .agent-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
-.agent-name{font-size:15px;font-weight:700;color:#e8f0fe}
-.agent-sueldo{font-size:11px;color:#4a6a8a;margin-top:2px}
+.agent-name{font-size:15px;font-weight:700;color:#33475B}
+.agent-sueldo{font-size:11px;color:#7C98B6;margin-top:2px}
 .agent-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.agent-stat{background:#0f1624;border-radius:8px;padding:10px;border:1px solid #1e2d45}
-.agent-stat label{font-size:10px;color:#4a6a8a;display:block}
+.agent-stat{background:#FFFFFF;border-radius:8px;padding:10px;border:1px solid #CBD6E2}
+.agent-stat label{font-size:10px;color:#7C98B6;display:block}
 .agent-stat .val{font-size:14px;font-weight:700;margin-top:3px}
 
 /* COMMISSION TABLE COLORS */
-.col-paid{color:#4ade80}
-.col-pending{color:#facc15}
-.col-cancel{color:#f87171}
+.col-paid{color:#00BDA5}
+.col-pending{color:#F5C26B}
+.col-cancel{color:#F2545B}
 .toggle-btn{cursor:pointer;border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:700;transition:all 0.15s}
-.toggle-paid{background:#052e16;color:#4ade80;border:1px solid #166534}
-.toggle-pending{background:#1c1a05;color:#facc15;border:1px solid #854d0e}
+.toggle-paid{background:#E8F9F7;color:#00A492;border:1px solid #00BDA5}
+.toggle-pending{background:#FFFBE8;color:#D4A017;border:1px solid #F5C26B}
 
 /* ROI BARS */
-.bar-wrap{background:#080c14;border-radius:8px;height:8px;overflow:hidden;margin-top:4px}
-.bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#0d8fd4,#22c55e);transition:width 0.5s}
+.bar-wrap{background:#EAF0FB;border-radius:8px;height:8px;overflow:hidden;margin-top:4px}
+.bar-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,#FF7A59,#00BDA5);transition:width 0.5s}
 
 /* PROGRESS */
 .progress-ring{font-size:36px;font-weight:800;text-align:center;padding:10px}
 
 /* TABS */
 .month-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
-.month-tab{padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;border:1.5px solid #1e2d45;background:#080c14;color:#4a6a8a;transition:all 0.15s}
-.month-tab.active{background:linear-gradient(135deg,#0d8fd4,#1a9fe3);color:#fff;border-color:#1a9fe3}
-.add-month-btn{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;border:1.5px dashed #1e2d45;background:none;color:#4a6a8a;transition:all 0.15s}
-.add-month-btn:hover{border-color:#22c55e;color:#22c55e}
+.month-tab{padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12px;border:1.5px solid #CBD6E2;background:#FFFFFF;color:#7C98B6;transition:all 0.15s}
+.month-tab.active{background:linear-gradient(135deg,#FF7A59,#FF5733);color:#fff;border-color:#FF7A59}
+.add-month-btn{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;border:1.5px dashed #CBD6E2;background:none;color:#7C98B6;transition:all 0.15s}
+.add-month-btn:hover{border-color:#00BDA5;color:#00BDA5}
 
 /* QUICK STATS ROW */
-.quick-stats{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#4a6a8a;margin-bottom:16px}
-.quick-stats span b{color:#e8f0fe}
+.quick-stats{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#7C98B6;margin-bottom:16px}
+.quick-stats span b{color:#33475B}
 
 /* NOTES */
-.note-cell{max-width:180px;overflow:hidden;text-overflow:ellipsis;color:#4a6a8a;font-size:11px}
+.note-cell{max-width:180px;overflow:hidden;text-overflow:ellipsis;color:#7C98B6;font-size:11px}
 
 /* INLINE SELECT */
-.inline-sel{background:#080c14;border:1px solid #1e2d45;color:#e8f0fe;padding:4px 8px;border-radius:6px;font-size:11px;outline:none}
-.inline-sel:focus{border-color:#1a9fe3}
+.inline-sel{background:#FFFFFF;border:1px solid #CBD6E2;color:#33475B;padding:4px 8px;border-radius:6px;font-size:11px;outline:none}
+.inline-sel:focus{border-color:#FF7A59}
 
 /* MOBILE */
 @media(max-width:768px){
@@ -171,13 +177,13 @@ tr:hover td{background:#111928}
 }
 
 /* NOTIFICATION */
-.notif{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transform:translateX(200%);transition:transform 0.3s;max-width:300px;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.notif{position:fixed;top:20px;right:20px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transform:translateX(200%);transition:transform 0.3s;max-width:300px;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
 .notif.show{transform:translateX(0)}
-.notif.success{background:#052e16;color:#4ade80;border:1px solid #166534}
-.notif.error{background:#1c0e0e;color:#f87171;border:1px solid #7f1d1d}
+.notif.success{background:#E8F9F7;color:#00A492;border:1px solid #00BDA5}
+.notif.error{background:#FFF0F0;color:#E04048;border:1px solid #F2545B}
 
 /* RESUMEN TABLE */
-.resumen-group td:first-child{font-weight:700;color:#1a9fe3}
+.resumen-group td:first-child{font-weight:700;color:#FF7A59}
 </style>
 </head>
 <body>
@@ -240,7 +246,7 @@ tr:hover td{background:#111928}
   <div class="topbar">
     <h2 id="page-title">Dashboard</h2>
     <div class="topbar-right">
-      <span style="font-size:11px;color:#64748b" id="topbar-date"></span>
+      <span style="font-size:11px;color:#7C98B6" id="topbar-date"></span>
       <span class="badge-dealer">Dealer 594193</span>
     </div>
   </div>
@@ -419,7 +425,7 @@ tr:hover td{background:#111928}
     <!-- ========== RESUMEN ========== -->
     <div class="page" id="page-resumen">
       <div class="filters" style="margin-bottom:20px">
-        <select id="resumen-mes-sel" onchange="renderResumen()" style="background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:9px 14px;border-radius:8px;font-size:13px;outline:none">
+        <select id="resumen-mes-sel" onchange="renderResumen()" style="background:#EAF0FB;border:1px solid #CBD6E2;color:#33475B;padding:9px 14px;border-radius:8px;font-size:13px;outline:none">
         </select>
       </div>
       <div class="cards" id="resumen-cards"></div>
@@ -451,7 +457,7 @@ tr:hover td{background:#111928}
             </select>
           </div>
         </div>
-        <div style="background:#1c0a00;border:1px solid #9a3412;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#fb923c;line-height:1.6">
+        <div style="background:#FFF3EE;border:1px solid #FF7A59;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#FF9D80;line-height:1.6">
           <b>¿Cómo funciona?</b> Cuando un cliente deja de pagar, márcalo como Chargeback, indica el mes en que dejó de pagar y cuántos meses pagó antes de cancelar.
           El sistema calcula automáticamente cuánto debes devolver: <b>(9 meses adelantados − meses pagados) × comisión mensual</b>.
         </div>
@@ -532,7 +538,7 @@ tr:hover td{background:#111928}
         </div>
         <!-- SOLO PARA SALUD: comisión residual mensual -->
         <div class="form-group" id="c-residual-wrap" style="display:none">
-          <label>💚 Comisión Residual Mensual ($) <span style="font-size:10px;color:#4a6a8a">— Lo que paga la compañía cada mes</span></label>
+          <label>💚 Comisión Residual Mensual ($) <span style="font-size:10px;color:#7C98B6">— Lo que paga la compañía cada mes</span></label>
           <input type="number" id="c-residual" placeholder="Ej: 5.00" step="0.01" min="0" oninput="updateComPreview()">
         </div>
         <div class="form-group">
@@ -562,7 +568,7 @@ tr:hover td{background:#111928}
           </select>
         </div>
         <div class="form-group">
-          <label>💜 Com. Agente ($) <span style="font-size:10px;color:#4a6a8a">— Cuánto le pagas al vendedor por esta venta</span></label>
+          <label>💜 Com. Agente ($) <span style="font-size:10px;color:#7C98B6">— Cuánto le pagas al vendedor por esta venta</span></label>
           <input type="number" id="c-com-agente" placeholder="8.00" step="0.01" min="0" value="8" oninput="updateComPreview()">
         </div>
       </div>
@@ -571,24 +577,24 @@ tr:hover td{background:#111928}
         <textarea id="c-notas" placeholder="Observaciones sobre el cliente..."></textarea>
       </div>
       <!-- PREVIEW COMISIÓN - DENTAL -->
-      <div id="com-preview" style="background:#0f172a;border-radius:10px;padding:14px;margin-top:16px;display:none">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:10px">📋 Preview Comisión Dental</div>
+      <div id="com-preview" style="background:#F5F8FA;border-radius:10px;padding:14px;margin-top:16px;display:none">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7C98B6;margin-bottom:10px">📋 Preview Comisión Dental</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Total (30%×12m)</div><div style="font-weight:800;color:#38bdf8" id="prev-total">—</div></div>
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Cobras Ahora (9m)</div><div style="font-weight:800;color:#22c55e" id="prev-adelanto">—</div></div>
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Cobras Después (3m)</div><div style="font-weight:800;color:#f97316" id="prev-final">—</div></div>
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Com. Agente</div><div style="font-weight:800;color:#a855f7" id="prev-agente">$8.00</div><div style="font-size:9px;color:#4a6a8a">editable arriba</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#7C98B6">Total (30%×12m)</div><div style="font-weight:800;color:#0091AE" id="prev-total">—</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#7C98B6">Cobras Ahora (9m)</div><div style="font-weight:800;color:#00BDA5" id="prev-adelanto">—</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#7C98B6">Cobras Después (3m)</div><div style="font-weight:800;color:#FF7A59" id="prev-final">—</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#7C98B6">Com. Agente</div><div style="font-weight:800;color:#6A78D1" id="prev-agente">$8.00</div><div style="font-size:9px;color:#7C98B6">editable arriba</div></div>
         </div>
       </div>
       <!-- PREVIEW COMISIÓN - SALUD -->
-      <div id="com-preview-salud" style="background:#0a2e1a;border:1px solid #166534;border-radius:10px;padding:14px;margin-top:16px;display:none">
-        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#4ade80;margin-bottom:10px">💚 Preview Comisión Salud (Residual Mensual)</div>
+      <div id="com-preview-salud" style="background:#E8F9F7;border:1px solid #00BDA5;border-radius:10px;padding:14px;margin-top:16px;display:none">
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#00A492;margin-bottom:10px">💚 Preview Comisión Salud (Residual Mensual)</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Cobras / mes</div><div style="font-weight:800;color:#4ade80" id="prev-salud-mensual">—</div></div>
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Proyectado 12 meses</div><div style="font-weight:800;color:#22c55e" id="prev-salud-total">—</div></div>
-          <div style="text-align:center"><div style="font-size:10px;color:#64748b">Com. Agente</div><div style="font-weight:800;color:#a855f7">$8.00</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#7C98B6">Cobras / mes</div><div style="font-weight:800;color:#00A492" id="prev-salud-mensual">—</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#7C98B6">Proyectado 12 meses</div><div style="font-weight:800;color:#00BDA5" id="prev-salud-total">—</div></div>
+          <div style="text-align:center"><div style="font-size:10px;color:#7C98B6">Com. Agente</div><div style="font-weight:800;color:#6A78D1">$8.00</div></div>
         </div>
-        <div style="margin-top:10px;font-size:10px;color:#4a6a8a">⚠️ Salud paga mes a mes. No hay adelanto. Se cobra mientras el cliente esté activo (máx. 12 meses).</div>
+        <div style="margin-top:10px;font-size:10px;color:#7C98B6">⚠️ Salud paga mes a mes. No hay adelanto. Se cobra mientras el cliente esté activo (máx. 12 meses).</div>
       </div>
     </div>
     <div class="modal-footer">
@@ -709,7 +715,7 @@ tr:hover td{background:#111928}
       <button class="modal-close" onclick="closeModal('modal-chargeback')">✕</button>
     </div>
     <div class="modal-body">
-      <div id="cb-cliente-info" style="background:#080c14;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px"></div>
+      <div id="cb-cliente-info" style="background:#F5F8FA;border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px"></div>
       <div class="form-grid cols1">
         <div class="form-group">
           <label>Mes que Dejó de Pagar</label>
@@ -718,34 +724,34 @@ tr:hover td{background:#111928}
         <div class="form-group">
           <label>Meses que el Cliente Pagó (antes de cancelar)</label>
           <input type="number" id="cb-meses-pagados" min="0" max="9" placeholder="Ej: 3" oninput="updateCBPreview()">
-          <span style="font-size:11px;color:#4a6a8a">De los 9 meses adelantados, ¿cuántos pagó?</span>
+          <span style="font-size:11px;color:#7C98B6">De los 9 meses adelantados, ¿cuántos pagó?</span>
         </div>
         <div class="form-group">
           <label>Notas del Chargeback</label>
           <textarea id="cb-notas" placeholder="Razón de cancelación, acuerdos, etc..."></textarea>
         </div>
       </div>
-      <div id="cb-preview" style="background:#1c0a00;border:1px solid #9a3412;border-radius:10px;padding:14px;margin-top:12px;display:none">
-        <div style="font-size:11px;color:#fb923c;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Cálculo del Chargeback</div>
+      <div id="cb-preview" style="background:#FFF3EE;border:1px solid #FF7A59;border-radius:10px;padding:14px;margin-top:12px;display:none">
+        <div style="font-size:11px;color:#FF9D80;font-weight:700;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">Cálculo del Chargeback</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div style="background:#0a0e1a;border-radius:7px;padding:10px">
-            <div style="font-size:10px;color:#4a6a8a">Adelanto recibido (9m)</div>
-            <div style="font-weight:800;color:#22c55e;font-size:15px" id="cb-prev-adelanto">—</div>
+          <div style="background:#F5F8FA;border-radius:7px;padding:10px">
+            <div style="font-size:10px;color:#7C98B6">Adelanto recibido (9m)</div>
+            <div style="font-weight:800;color:#00BDA5;font-size:15px" id="cb-prev-adelanto">—</div>
           </div>
-          <div style="background:#0a0e1a;border-radius:7px;padding:10px">
-            <div style="font-size:10px;color:#4a6a8a">Meses pagados × com.</div>
-            <div style="font-weight:800;color:#1a9fe3;font-size:15px" id="cb-prev-pagado">—</div>
+          <div style="background:#F5F8FA;border-radius:7px;padding:10px">
+            <div style="font-size:10px;color:#7C98B6">Meses pagados × com.</div>
+            <div style="font-weight:800;color:#FF7A59;font-size:15px" id="cb-prev-pagado">—</div>
           </div>
-          <div style="background:#0a0e1a;border-radius:7px;padding:10px">
-            <div style="font-size:10px;color:#4a6a8a">Meses a devolver</div>
-            <div style="font-weight:800;color:#f97316;font-size:15px" id="cb-prev-meses">—</div>
+          <div style="background:#F5F8FA;border-radius:7px;padding:10px">
+            <div style="font-size:10px;color:#7C98B6">Meses a devolver</div>
+            <div style="font-weight:800;color:#FF7A59;font-size:15px" id="cb-prev-meses">—</div>
           </div>
-          <div style="background:#1c0a00;border-radius:7px;padding:10px;border:1px solid #9a3412">
-            <div style="font-size:10px;color:#fb923c">⚠️ DEBES DEVOLVER</div>
-            <div style="font-weight:800;color:#ef4444;font-size:18px" id="cb-prev-devolver">—</div>
+          <div style="background:#FFF3EE;border-radius:7px;padding:10px;border:1px solid #FF7A59">
+            <div style="font-size:10px;color:#FF9D80">⚠️ DEBES DEVOLVER</div>
+            <div style="font-weight:800;color:#F2545B;font-size:18px" id="cb-prev-devolver">—</div>
           </div>
         </div>
-        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #9a3412;font-size:11px;color:#fb923c" id="cb-prev-agente-note"></div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #9a3412;font-size:11px;color:#FF9D80" id="cb-prev-agente-note"></div>
       </div>
     </div>
     <div class="modal-footer">
@@ -982,10 +988,10 @@ function renderDashboard() {
   document.getElementById('dash-recent-body').innerHTML = recent.map(c=>{
     const cc = clienteCom(c);
     const primaCell = c.tipo==='salud'
-      ? `<span style="color:#4ade80">${fmt(cc.mensual)}/mes 💚</span>`
+      ? `<span style="color:#00A492">${fmt(cc.mensual)}/mes 💚</span>`
       : `${fmt(c.prima)}/mo`;
     const comCell = c.tipo==='salud'
-      ? `<span style="color:#4ade80">${fmt(cc.cobrado)} (${cc.meses}m)</span>`
+      ? `<span style="color:#00A492">${fmt(cc.cobrado)} (${cc.meses}m)</span>`
       : fmt(cc.adelanto);
     return `<tr>
       <td><b>${c.nombre}</b></td>
@@ -1002,12 +1008,12 @@ function renderDashboard() {
   const maxV = Math.max(...Object.values(mesCount),1);
   document.getElementById('dash-bar-chart').innerHTML = Object.entries(mesCount).map(([m,v])=>`
     <div style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-bottom:4px">
-        <span>${m}</span><span><b style="color:#38bdf8">${v}</b> cliente${v!==1?'s':''}</span>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#7C98B6;margin-bottom:4px">
+        <span>${m}</span><span><b style="color:#0091AE">${v}</b> cliente${v!==1?'s':''}</span>
       </div>
       <div class="bar-wrap"><div class="bar-fill" style="width:${(v/maxV)*100}%"></div></div>
     </div>
-  `).join('') || '<div style="color:#475569;font-size:13px;text-align:center;padding:20px">Sin datos</div>';
+  `).join('') || '<div style="color:#7C98B6;font-size:13px;text-align:center;padding:20px">Sin datos</div>';
 
   // ALERTA BAJO RENDIMIENTO — sin filtro de mes: compara todas las ventas activas del agente vs su sueldo mensual
   renderAlertaAgentes('dash-alerta-sueldo', null);
@@ -1023,24 +1029,24 @@ function renderDashboard() {
     return { nombre:a.nombre, ventas:ventas.length, adelantoPend, finalPend, totalPend };
   });
   document.getElementById('dash-agent-summary').innerHTML = agSum.length ? `
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:6px 0 8px;border-bottom:1px solid #334155;font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:6px 0 8px;border-bottom:1px solid #CBD6E2;font-size:10px;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px">
       <span>Agente</span><span style="text-align:right">Adelanto (9m)</span><span style="text-align:right">Final (3m)</span><span style="text-align:right">Total Pendiente</span>
     </div>
     ${agSum.map(a=>`
     <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid #0f172a">
-      <div><div style="font-weight:600;font-size:13px">${a.nombre}</div><div style="font-size:10px;color:#64748b">${a.ventas} venta${a.ventas!==1?'s':''}</div></div>
-      <div style="text-align:right"><div style="font-weight:700;color:#22c55e;font-size:12px">${fmt(a.adelantoPend)}</div><div style="font-size:9px;color:#475569">9m pend.</div></div>
-      <div style="text-align:right"><div style="font-weight:700;color:#f97316;font-size:12px">${fmt(a.finalPend)}</div><div style="font-size:9px;color:#475569">3m pend.</div></div>
-      <div style="text-align:right"><div style="font-weight:800;color:#38bdf8;font-size:13px">${fmt(a.totalPend)}</div><div style="font-size:9px;color:#475569">total</div></div>
+      <div><div style="font-weight:600;font-size:13px">${a.nombre}</div><div style="font-size:10px;color:#7C98B6">${a.ventas} venta${a.ventas!==1?'s':''}</div></div>
+      <div style="text-align:right"><div style="font-weight:700;color:#00BDA5;font-size:12px">${fmt(a.adelantoPend)}</div><div style="font-size:9px;color:#7C98B6">9m pend.</div></div>
+      <div style="text-align:right"><div style="font-weight:700;color:#FF7A59;font-size:12px">${fmt(a.finalPend)}</div><div style="font-size:9px;color:#7C98B6">3m pend.</div></div>
+      <div style="text-align:right"><div style="font-weight:800;color:#0091AE;font-size:13px">${fmt(a.totalPend)}</div><div style="font-size:9px;color:#7C98B6">total</div></div>
     </div>
   `).join('')}
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:8px 0 0;border-top:1px solid #334155;margin-top:2px">
-      <div style="font-size:11px;color:#64748b;font-weight:700">TOTAL</div>
-      <div style="text-align:right;font-weight:800;color:#22c55e;font-size:12px">${fmt(agSum.reduce((s,a)=>s+a.adelantoPend,0))}</div>
-      <div style="text-align:right;font-weight:800;color:#f97316;font-size:12px">${fmt(agSum.reduce((s,a)=>s+a.finalPend,0))}</div>
-      <div style="text-align:right;font-weight:800;color:#38bdf8;font-size:13px">${fmt(agSum.reduce((s,a)=>s+a.totalPend,0))}</div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:8px 0 0;border-top:1px solid #CBD6E2;margin-top:2px">
+      <div style="font-size:11px;color:#7C98B6;font-weight:700">TOTAL</div>
+      <div style="text-align:right;font-weight:800;color:#00BDA5;font-size:12px">${fmt(agSum.reduce((s,a)=>s+a.adelantoPend,0))}</div>
+      <div style="text-align:right;font-weight:800;color:#FF7A59;font-size:12px">${fmt(agSum.reduce((s,a)=>s+a.finalPend,0))}</div>
+      <div style="text-align:right;font-weight:800;color:#0091AE;font-size:13px">${fmt(agSum.reduce((s,a)=>s+a.totalPend,0))}</div>
     </div>
-  ` : '<div style="color:#475569;font-size:13px;padding:10px">Sin agentes</div>';
+  ` : '<div style="color:#7C98B6;font-size:13px;padding:10px">Sin agentes</div>';
 
   // CAMPAIGNS
   document.getElementById('dash-campaigns').innerHTML = appData.campanas.map(c=>{
@@ -1050,14 +1056,14 @@ function renderDashboard() {
     return `<div style="padding:10px 0;border-bottom:1px solid #0f172a">
       <div style="display:flex;justify-content:space-between">
         <div><div style="font-weight:600;font-size:12px">${c.nombre}</div>
-        <div style="font-size:10px;color:#64748b">${c.plataforma} · ${c.leads} leads · ${ventas.length} ventas</div></div>
+        <div style="font-size:10px;color:#7C98B6">${c.plataforma} · ${c.leads} leads · ${ventas.length} ventas</div></div>
         <div style="text-align:right">
           <div style="font-weight:800;color:${roi>=0?'#22c55e':'#ef4444'}">${roi>=0?'+':''}${roi.toFixed(0)}%</div>
-          <div style="font-size:10px;color:#64748b">ROI</div>
+          <div style="font-size:10px;color:#7C98B6">ROI</div>
         </div>
       </div>
     </div>`;
-  }).join('') || '<div style="color:#475569;font-size:13px;padding:10px">Sin campañas</div>';
+  }).join('') || '<div style="color:#7C98B6;font-size:13px;padding:10px">Sin campañas</div>';
 }
 
 // ============================================================
@@ -1110,11 +1116,11 @@ function renderClientes() {
     const cc = clienteCom(c);
     const agenteOpts = getAgenteNombres().map(n=>`<option value="${n}" ${c.agente===n?'selected':''}>${n}</option>`).join('');
     const isSalud = c.tipo==='salud';
-    return `<tr ${isSalud?'style="background:#060f0a"':''}>
-      <td style="color:#64748b">${i+1}</td>
-      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:90px" value="${c.cuenta||''}" onchange="updateField(${c.id},'cuenta',this.value)" placeholder="—"></td>
-      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:12px;width:140px;font-weight:600" value="${c.nombre||''}" onchange="updateField(${c.id},'nombre',this.value)"></td>
-      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:110px" value="${c.tel||''}" onchange="updateField(${c.id},'tel',this.value)" placeholder="—"></td>
+    return `<tr ${isSalud?'style="background:#F0FDF9"':''}>
+      <td style="color:#7C98B6">${i+1}</td>
+      <td><input style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 7px;border-radius:5px;font-size:11px;width:90px" value="${c.cuenta||''}" onchange="updateField(${c.id},'cuenta',this.value)" placeholder="—"></td>
+      <td><input style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 7px;border-radius:5px;font-size:12px;width:140px;font-weight:600" value="${c.nombre||''}" onchange="updateField(${c.id},'nombre',this.value)"></td>
+      <td><input style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 7px;border-radius:5px;font-size:11px;width:110px" value="${c.tel||''}" onchange="updateField(${c.id},'tel',this.value)" placeholder="—"></td>
       <td><select class="inline-sel" onchange="updateField(${c.id},'agente',this.value)">${agenteOpts}</select></td>
       <td><select class="inline-sel" onchange="updateField(${c.id},'tipo',this.value)">
         <option value="dental" ${c.tipo==='dental'?'selected':''}>Dental</option>
@@ -1122,11 +1128,11 @@ function renderClientes() {
         <option value="directo" ${c.tipo==='directo'?'selected':''}>Directo</option>
         <option value="salud" ${c.tipo==='salud'?'selected':''}>💚 Salud</option>
       </select></td>
-      <td style="font-weight:700">${isSalud?`<span style="color:#4ade80">${fmt(cc.mensual)}/mes</span>`:fmt(c.prima)}</td>
-      <td style="color:#38bdf8;font-weight:700">${fmt(cc.total)}</td>
-      <td style="color:#22c55e">${isSalud?`<span title="${cc.meses} meses">${fmt(cc.adelanto)} cobrado</span>`:fmt(cc.adelanto)}</td>
-      <td style="color:#f97316">${isSalud?`<span style="color:#4a6a8a">residual</span>`:fmt(cc.final)}</td>
-      <td><input type="number" step="0.01" min="0" style="background:#0f172a;border:1px solid #334155;color:#a855f7;font-weight:700;padding:3px 6px;border-radius:5px;font-size:11px;width:70px" value="${(c.comAgente!==undefined?c.comAgente:8)}" onchange="updateField(${c.id},'comAgente',parseFloat(this.value)||0)"></td>
+      <td style="font-weight:700">${isSalud?`<span style="color:#00A492">${fmt(cc.mensual)}/mes</span>`:fmt(c.prima)}</td>
+      <td style="color:#0091AE;font-weight:700">${fmt(cc.total)}</td>
+      <td style="color:#00BDA5">${isSalud?`<span title="${cc.meses} meses">${fmt(cc.adelanto)} cobrado</span>`:fmt(cc.adelanto)}</td>
+      <td style="color:#FF7A59">${isSalud?`<span style="color:#7C98B6">residual</span>`:fmt(cc.final)}</td>
+      <td><input type="number" step="0.01" min="0" style="background:#F5F8FA;border:1px solid #CBD6E2;color:#6A78D1;font-weight:700;padding:3px 6px;border-radius:5px;font-size:11px;width:70px" value="${(c.comAgente!==undefined?c.comAgente:8)}" onchange="updateField(${c.id},'comAgente',parseFloat(this.value)||0)"></td>
       <td>
         <select class="inline-sel" onchange="updateField(${c.id},'estado',this.value)">
           <option value="activo" ${c.estado==='activo'?'selected':''}>Activo</option>
@@ -1331,7 +1337,7 @@ function renderAgentes() {
         <div>
           <div class="agent-name">👤 ${a.nombre}</div>
           <div class="agent-sueldo">💰 Quincenal: ${fmt(a.sueldoQuincenal)}</div>
-          ${a.tel?`<div style="font-size:11px;color:#64748b;margin-top:2px">📞 ${a.tel}</div>`:''}
+          ${a.tel?`<div style="font-size:11px;color:#7C98B6;margin-top:2px">📞 ${a.tel}</div>`:''}
         </div>
         <div style="display:flex;gap:6px">
           <button class="btn btn-ghost btn-xs" onclick="openAgenteModal(${a.id})">✏️</button>
@@ -1339,17 +1345,17 @@ function renderAgentes() {
         </div>
       </div>
       <div class="agent-stats">
-        <div class="agent-stat"><label>Ventas Activas</label><div class="val" style="color:#3b82f6">${activos.length}</div></div>
-        <div class="agent-stat"><label>Com.Empresa Total</label><div class="val" style="color:#a855f7">${fmt(totalCom)}</div></div>
-        <div class="agent-stat"><label>Adelantos Pendientes</label><div class="val" style="color:#f97316">${fmt(adelantosPend)}</div></div>
-        <div class="agent-stat"><label>Com.$8 Pendiente</label><div class="val" style="color:#22c55e">${fmt(comAgentePend)}</div></div>
+        <div class="agent-stat"><label>Ventas Activas</label><div class="val" style="color:#0091AE">${activos.length}</div></div>
+        <div class="agent-stat"><label>Com.Empresa Total</label><div class="val" style="color:#6A78D1">${fmt(totalCom)}</div></div>
+        <div class="agent-stat"><label>Adelantos Pendientes</label><div class="val" style="color:#FF7A59">${fmt(adelantosPend)}</div></div>
+        <div class="agent-stat"><label>Com.$8 Pendiente</label><div class="val" style="color:#00BDA5">${fmt(comAgentePend)}</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:#64748b;padding-top:10px;border-top:1px solid #334155">
-        <span>Sueldos pagados: <b style="color:#e2e8f0">${fmt(sueldosMes)}</b></span>
-        <span>Total ventas: <b style="color:#e2e8f0">${ventas.length}</b></span>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#7C98B6;padding-top:10px;border-top:1px solid #CBD6E2">
+        <span>Sueldos pagados: <b style="color:#33475B">${fmt(sueldosMes)}</b></span>
+        <span>Total ventas: <b style="color:#33475B">${ventas.length}</b></span>
       </div>
     </div>`;
-  }).join('') || '<div style="color:#475569;padding:20px">Sin agentes registrados</div>';
+  }).join('') || '<div style="color:#7C98B6;padding:20px">Sin agentes registrados</div>';
   renderAgenteVentas();
 }
 
@@ -1361,28 +1367,28 @@ function renderAgenteVentas() {
     const cc = clienteCom(c);
     const isSalud = c.tipo === 'salud';
     const agenteOpts = getAgenteNombres().map(n=>`<option value="${n}" ${c.agente===n?'selected':''}>${n}</option>`).join('');
-    return `<tr ${isSalud?'style="background:#060f0a"':''}>
-      <td style="color:#64748b">${i+1}</td>
-      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:12px;width:140px;font-weight:600" value="${c.nombre||''}" onchange="updateFieldRe(${c.id},'nombre',this.value)"></td>
-      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:90px" value="${c.cuenta||''}" onchange="updateFieldRe(${c.id},'cuenta',this.value)" placeholder="—"></td>
+    return `<tr ${isSalud?'style="background:#F0FDF9"':''}>
+      <td style="color:#7C98B6">${i+1}</td>
+      <td><input style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 7px;border-radius:5px;font-size:12px;width:140px;font-weight:600" value="${c.nombre||''}" onchange="updateFieldRe(${c.id},'nombre',this.value)"></td>
+      <td><input style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 7px;border-radius:5px;font-size:11px;width:90px" value="${c.cuenta||''}" onchange="updateFieldRe(${c.id},'cuenta',this.value)" placeholder="—"></td>
       <td><select class="inline-sel" onchange="updateFieldRe(${c.id},'tipo',this.value)">
         <option value="dental" ${c.tipo==='dental'?'selected':''}>Dental</option>
         <option value="referido" ${c.tipo==='referido'?'selected':''}>Referido</option>
         <option value="directo" ${c.tipo==='directo'?'selected':''}>Directo</option>
         <option value="salud" ${c.tipo==='salud'?'selected':''}>💚 Salud</option>
       </select></td>
-      <td>${isSalud?`<span style="color:#4ade80;font-size:11px">${fmt(cc.mensual)}/mes</span>`:`<input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:80px" type="number" step="0.01" value="${c.prima||''}" onchange="updateFieldRe(${c.id},'prima',parseFloat(this.value)||0)">`}</td>
-      <td style="color:#38bdf8;font-weight:700">${fmt(cc.total)}</td>
-      <td style="color:#22c55e">${isSalud?`${fmt(cc.adelanto)}<span style="font-size:9px;color:#4a6a8a"> cobrado</span>`:fmt(cc.adelanto)}</td>
-      <td style="color:#f97316">${isSalud?`<span style="color:#4a6a8a">residual</span>`:fmt(cc.final)}</td>
-      <td><input type="number" step="0.01" min="0" style="background:#0f172a;border:1px solid #334155;color:#a855f7;font-weight:700;padding:3px 6px;border-radius:5px;font-size:11px;width:70px" value="${(c.comAgente!==undefined?c.comAgente:8)}" onchange="updateFieldRe(${c.id},'comAgente',parseFloat(this.value)||0)"></td>
+      <td>${isSalud?`<span style="color:#00A492;font-size:11px">${fmt(cc.mensual)}/mes</span>`:`<input style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 7px;border-radius:5px;font-size:11px;width:80px" type="number" step="0.01" value="${c.prima||''}" onchange="updateFieldRe(${c.id},'prima',parseFloat(this.value)||0)">`}</td>
+      <td style="color:#0091AE;font-weight:700">${fmt(cc.total)}</td>
+      <td style="color:#00BDA5">${isSalud?`${fmt(cc.adelanto)}<span style="font-size:9px;color:#7C98B6"> cobrado</span>`:fmt(cc.adelanto)}</td>
+      <td style="color:#FF7A59">${isSalud?`<span style="color:#7C98B6">residual</span>`:fmt(cc.final)}</td>
+      <td><input type="number" step="0.01" min="0" style="background:#F5F8FA;border:1px solid #CBD6E2;color:#6A78D1;font-weight:700;padding:3px 6px;border-radius:5px;font-size:11px;width:70px" value="${(c.comAgente!==undefined?c.comAgente:8)}" onchange="updateFieldRe(${c.id},'comAgente',parseFloat(this.value)||0)"></td>
       <td><select class="inline-sel" onchange="updateFieldRe(${c.id},'agente',this.value)">${agenteOpts}</select></td>
       <td><select class="inline-sel" onchange="updateFieldRe(${c.id},'estado',this.value)">
         <option value="activo" ${c.estado==='activo'?'selected':''}>Activo</option>
         <option value="pendiente" ${c.estado==='pendiente'?'selected':''}>Pendiente</option>
         <option value="cancelado" ${c.estado==='cancelado'?'selected':''}>Cancelado</option>
       </select></td>
-      <td><input style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 7px;border-radius:5px;font-size:11px;width:110px" type="date" value="${c.fecha||''}" onchange="updateFieldRe(${c.id},'fecha',this.value)"></td>
+      <td><input style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 7px;border-radius:5px;font-size:11px;width:110px" type="date" value="${c.fecha||''}" onchange="updateFieldRe(${c.id},'fecha',this.value)"></td>
       <td><button class="btn btn-danger btn-xs" onclick="eliminarCliente(${c.id});renderAgenteVentas()">✕</button></td>
     </tr>`;
   }).join('') : '<tr><td colspan="12" class="tbl-empty">Sin ventas</td></tr>';
@@ -1496,7 +1502,7 @@ function renderComisiones() {
   });
 
   const body = document.getElementById('comisiones-body');
-  const inpStyle = 'background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 6px;border-radius:5px;font-size:10px;width:100px';
+  const inpStyle = 'background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 6px;border-radius:5px;font-size:10px;width:100px';
   body.innerHTML = list.length ? list.map((c,i)=>{
     const comAg = c.comAgente !== undefined ? c.comAgente : 8;
     if (c.tipo === 'salud') {
@@ -1505,24 +1511,24 @@ function renderComisiones() {
       const meses    = parseInt(c.mesesCobradosSalud)||0;
       const cobrado  = mensual * meses;
       const restantes = Math.max(0, 12 - meses);
-      return `<tr style="background:#060f0a">
+      return `<tr style="background:#F0FDF9">
         <td>${i+1}</td>
-        <td><b>${c.nombre}</b><br><span style="font-size:10px;color:#64748b">${c.cuenta||'sin cuenta'}</span></td>
+        <td><b>${c.nombre}</b><br><span style="font-size:10px;color:#7C98B6">${c.cuenta||'sin cuenta'}</span></td>
         <td>${c.agente}</td>
         <td><span class="badge badge-salud">💚 Salud</span></td>
-        <td style="color:#4ade80;font-weight:700">${fmt(mensual)}<span style="font-size:9px;color:#4a6a8a">/mes</span></td>
+        <td style="color:#00A492;font-weight:700">${fmt(mensual)}<span style="font-size:9px;color:#7C98B6">/mes</span></td>
         <td colspan="3" style="background:#030a06">
           <div style="display:flex;align-items:center;gap:8px">
             <button class="btn btn-ghost btn-xs" onclick="setSaludMeses(${c.id},-1)" ${meses<=0?'disabled':''}>−</button>
-            <span style="font-weight:800;color:#4ade80;font-size:13px">${meses}</span>
-            <span style="font-size:10px;color:#4a6a8a">meses cobrados</span>
+            <span style="font-weight:800;color:#00A492;font-size:13px">${meses}</span>
+            <span style="font-size:10px;color:#7C98B6">meses cobrados</span>
             <button class="btn btn-ghost btn-xs" onclick="setSaludMeses(${c.id},1)" ${meses>=12?'disabled':''}>+</button>
-            <span style="font-size:10px;color:#64748b">(${restantes} restantes)</span>
+            <span style="font-size:10px;color:#7C98B6">(${restantes} restantes)</span>
           </div>
         </td>
-        <td style="color:#22c55e;font-weight:700">${fmt(cobrado)}<span style="font-size:9px;color:#4a6a8a"> cobrado</span></td>
-        <td colspan="2" style="color:#4a6a8a;font-size:10px">—</td>
-        <td><input type="number" step="0.01" min="0" style="${inpStyle};width:70px;color:#a855f7;font-weight:700" value="${comAg}" onchange="updateField(${c.id},'comAgente',parseFloat(this.value)||0)" title="Editar comisión del agente"></td>
+        <td style="color:#00BDA5;font-weight:700">${fmt(cobrado)}<span style="font-size:9px;color:#7C98B6"> cobrado</span></td>
+        <td colspan="2" style="color:#7C98B6;font-size:10px">—</td>
+        <td><input type="number" step="0.01" min="0" style="${inpStyle};width:70px;color:#6A78D1;font-weight:700" value="${comAg}" onchange="updateField(${c.id},'comAgente',parseFloat(this.value)||0)" title="Editar comisión del agente"></td>
         <td><button class="toggle-btn ${c.comAgentePagada?'toggle-paid':'toggle-pending'}" onclick="toggleCom(${c.id},'comAgentePagada')">${c.comAgentePagada?'✅ PAGADO':'⏳ PENDIENTE'}</button></td>
         <td><input type="date" style="${inpStyle}" value="${c.fechaComAgente||''}" onchange="updateField(${c.id},'fechaComAgente',this.value)"></td>
         <td>${c.mes}</td>
@@ -1533,17 +1539,17 @@ function renderComisiones() {
     const com = calcCom(c.prima);
     return `<tr>
       <td>${i+1}</td>
-      <td><b>${c.nombre}</b><br><span style="font-size:10px;color:#64748b">${c.cuenta||'sin cuenta'}</span></td>
+      <td><b>${c.nombre}</b><br><span style="font-size:10px;color:#7C98B6">${c.cuenta||'sin cuenta'}</span></td>
       <td>${c.agente}</td>
       <td><span class="badge badge-${c.tipo}">${c.tipo}</span></td>
       <td>${fmt(c.prima)}</td>
-      <td style="color:#22c55e;font-weight:700">${fmt(com.adelanto)}</td>
+      <td style="color:#00BDA5;font-weight:700">${fmt(com.adelanto)}</td>
       <td><button class="toggle-btn ${c.adelantoPagado?'toggle-paid':'toggle-pending'}" onclick="toggleCom(${c.id},'adelantoPagado')">${c.adelantoPagado?'✅ PAGADO':'⏳ PENDIENTE'}</button></td>
       <td><input type="date" style="${inpStyle}" value="${c.fechaAdelanto||''}" onchange="updateField(${c.id},'fechaAdelanto',this.value)" title="Fecha en que se cobró el adelanto"></td>
-      <td style="color:#f97316;font-weight:700">${fmt(com.final)}</td>
+      <td style="color:#FF7A59;font-weight:700">${fmt(com.final)}</td>
       <td><button class="toggle-btn ${c.finalPagado?'toggle-paid':'toggle-pending'}" onclick="toggleCom(${c.id},'finalPagado')">${c.finalPagado?'✅ PAGADO':'⏳ PENDIENTE'}</button></td>
       <td><input type="date" style="${inpStyle}" value="${c.fechaFinal||''}" onchange="updateField(${c.id},'fechaFinal',this.value)" title="Fecha en que se cobró el final"></td>
-      <td><input type="number" step="0.01" min="0" style="${inpStyle};width:70px;color:#a855f7;font-weight:700" value="${comAg}" onchange="updateField(${c.id},'comAgente',parseFloat(this.value)||0)" title="Editar comisión del agente"></td>
+      <td><input type="number" step="0.01" min="0" style="${inpStyle};width:70px;color:#6A78D1;font-weight:700" value="${comAg}" onchange="updateField(${c.id},'comAgente',parseFloat(this.value)||0)" title="Editar comisión del agente"></td>
       <td><button class="toggle-btn ${c.comAgentePagada?'toggle-paid':'toggle-pending'}" onclick="toggleCom(${c.id},'comAgentePagada')">${c.comAgentePagada?'✅ PAGADO':'⏳ PENDIENTE'}</button></td>
       <td><input type="date" style="${inpStyle}" value="${c.fechaComAgente||''}" onchange="updateField(${c.id},'fechaComAgente',this.value)" title="Fecha en que se pagó al agente"></td>
       <td>${c.mes}</td>
@@ -1557,7 +1563,7 @@ function renderComisiones() {
     <td>${i+1}</td>
     <td>${s.agenteNombre}</td>
     <td>${s.quincena}</td>
-    <td style="font-weight:700;color:#22c55e">${fmt(s.monto)}</td>
+    <td style="font-weight:700;color:#00BDA5">${fmt(s.monto)}</td>
     <td>${s.fecha}</td>
     <td><span class="badge badge-paid">PAGADO</span></td>
     <td><button class="btn btn-danger btn-xs" onclick="eliminarSueldo(${s.id})">✕</button></td>
@@ -1640,30 +1646,30 @@ function renderCampanas() {
     const roi = c.gasto ? ((ingresos-c.gasto)/c.gasto*100) : 0;
     const cpl = c.leads ? (c.gasto/c.leads) : 0;
     const conv = c.leads ? (ventas.length/c.leads*100) : 0;
-    return `<div style="background:#0f172a;border-radius:12px;padding:20px;border:1px solid #334155">
+    return `<div style="background:#F5F8FA;border-radius:12px;padding:20px;border:1px solid #CBD6E2">
       <div style="display:flex;justify-content:space-between;margin-bottom:12px">
         <div><div style="font-weight:700;font-size:13px">${c.nombre}</div>
-        <div style="font-size:11px;color:#64748b;margin-top:2px">${c.plataforma} · <span style="color:${c.estado==='activa'?'#22c55e':'#64748b'}">${c.estado.toUpperCase()}</span></div></div>
+        <div style="font-size:11px;color:#7C98B6;margin-top:2px">${c.plataforma} · <span style="color:${c.estado==='activa'?'#22c55e':'#64748b'}">${c.estado.toUpperCase()}</span></div></div>
         <div style="display:flex;gap:6px">
           <button class="btn btn-ghost btn-xs" onclick="openCampanaModal(${c.id})">✏️</button>
           <button class="btn btn-danger btn-xs" onclick="eliminarCampana(${c.id})">✕</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-        <div style="background:#1e293b;border-radius:8px;padding:10px"><div style="font-size:10px;color:#64748b">Gasto</div><div style="font-weight:700;color:#ef4444">${fmt(c.gasto)}</div></div>
-        <div style="background:#1e293b;border-radius:8px;padding:10px"><div style="font-size:10px;color:#64748b">Leads</div><div style="font-weight:700;color:#3b82f6">${c.leads}</div></div>
-        <div style="background:#1e293b;border-radius:8px;padding:10px"><div style="font-size:10px;color:#64748b">Costo/Lead</div><div style="font-weight:700;color:#f97316">${fmt(cpl)}</div></div>
-        <div style="background:#1e293b;border-radius:8px;padding:10px"><div style="font-size:10px;color:#64748b">Ventas</div><div style="font-weight:700;color:#22c55e">${ventas.length}</div></div>
-        <div style="background:#1e293b;border-radius:8px;padding:10px"><div style="font-size:10px;color:#64748b">Ingresos Com.</div><div style="font-weight:700;color:#38bdf8">${fmt(ingresos)}</div></div>
-        <div style="background:#1e293b;border-radius:8px;padding:10px"><div style="font-size:10px;color:#64748b">Conversión</div><div style="font-weight:700;color:#a855f7">${conv.toFixed(1)}%</div></div>
+        <div style="background:#EAF0FB;border-radius:8px;padding:10px"><div style="font-size:10px;color:#7C98B6">Gasto</div><div style="font-weight:700;color:#F2545B">${fmt(c.gasto)}</div></div>
+        <div style="background:#EAF0FB;border-radius:8px;padding:10px"><div style="font-size:10px;color:#7C98B6">Leads</div><div style="font-weight:700;color:#0091AE">${c.leads}</div></div>
+        <div style="background:#EAF0FB;border-radius:8px;padding:10px"><div style="font-size:10px;color:#7C98B6">Costo/Lead</div><div style="font-weight:700;color:#FF7A59">${fmt(cpl)}</div></div>
+        <div style="background:#EAF0FB;border-radius:8px;padding:10px"><div style="font-size:10px;color:#7C98B6">Ventas</div><div style="font-weight:700;color:#00BDA5">${ventas.length}</div></div>
+        <div style="background:#EAF0FB;border-radius:8px;padding:10px"><div style="font-size:10px;color:#7C98B6">Ingresos Com.</div><div style="font-weight:700;color:#0091AE">${fmt(ingresos)}</div></div>
+        <div style="background:#EAF0FB;border-radius:8px;padding:10px"><div style="font-size:10px;color:#7C98B6">Conversión</div><div style="font-weight:700;color:#6A78D1">${conv.toFixed(1)}%</div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#1e293b;border-radius:8px">
-        <div style="font-size:11px;color:#64748b">ROI de la campaña</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#EAF0FB;border-radius:8px">
+        <div style="font-size:11px;color:#7C98B6">ROI de la campaña</div>
         <div style="font-weight:800;font-size:18px;color:${roi>=0?'#22c55e':'#ef4444'}">${roi>=0?'+':''}${roi.toFixed(1)}%</div>
       </div>
-      ${c.notas?`<div style="font-size:11px;color:#64748b;margin-top:10px;padding-top:10px;border-top:1px solid #1e293b">${c.notas}</div>`:''}
+      ${c.notas?`<div style="font-size:11px;color:#7C98B6;margin-top:10px;padding-top:10px;border-top:1px solid #1e293b">${c.notas}</div>`:''}
     </div>`;
-  }).join('') || '<div style="color:#475569;padding:20px">Sin campañas. Agrega una para trackear ROI.</div>';
+  }).join('') || '<div style="color:#7C98B6;padding:20px">Sin campañas. Agrega una para trackear ROI.</div>';
 
   // CONVERSION ANALYSIS
   const totalLeads = appData.campanas.reduce((s,c)=>s+(parseInt(c.leads)||0),0);
@@ -1675,25 +1681,25 @@ function renderCampanas() {
 
   document.getElementById('conversion-analysis').innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px">
-      <div style="background:#0f172a;border-radius:10px;padding:16px">
-        <div style="font-size:11px;color:#64748b;margin-bottom:8px">📢 VENTAS POR CAMPAÑAS</div>
-        <div style="font-size:24px;font-weight:800;color:#3b82f6">${totalVentasCamp}</div>
-        <div style="font-size:11px;color:#64748b">Ingresos (adelanto): ${fmt(ingCamp)}</div>
-        <div style="font-size:11px;color:#64748b">Gasto invertido: ${fmt(totalGasto)}</div>
-        <div style="font-size:11px;color:#22c55e;margin-top:4px">Ganancia neta: ${fmt(ingCamp-totalGasto)}</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:16px">
+        <div style="font-size:11px;color:#7C98B6;margin-bottom:8px">📢 VENTAS POR CAMPAÑAS</div>
+        <div style="font-size:24px;font-weight:800;color:#0091AE">${totalVentasCamp}</div>
+        <div style="font-size:11px;color:#7C98B6">Ingresos (adelanto): ${fmt(ingCamp)}</div>
+        <div style="font-size:11px;color:#7C98B6">Gasto invertido: ${fmt(totalGasto)}</div>
+        <div style="font-size:11px;color:#00BDA5;margin-top:4px">Ganancia neta: ${fmt(ingCamp-totalGasto)}</div>
       </div>
-      <div style="background:#0f172a;border-radius:10px;padding:16px">
-        <div style="font-size:11px;color:#64748b;margin-bottom:8px">🤝 VENTAS ORGÁNICAS / REFERIDOS</div>
-        <div style="font-size:24px;font-weight:800;color:#22c55e">${totalVentasOrg}</div>
-        <div style="font-size:11px;color:#64748b">Ingresos (adelanto): ${fmt(ingOrg)}</div>
-        <div style="font-size:11px;color:#64748b">Sin costo de adquisición</div>
-        <div style="font-size:11px;color:#22c55e;margin-top:4px">Ganancia neta: ${fmt(ingOrg)}</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:16px">
+        <div style="font-size:11px;color:#7C98B6;margin-bottom:8px">🤝 VENTAS ORGÁNICAS / REFERIDOS</div>
+        <div style="font-size:24px;font-weight:800;color:#00BDA5">${totalVentasOrg}</div>
+        <div style="font-size:11px;color:#7C98B6">Ingresos (adelanto): ${fmt(ingOrg)}</div>
+        <div style="font-size:11px;color:#7C98B6">Sin costo de adquisición</div>
+        <div style="font-size:11px;color:#00BDA5;margin-top:4px">Ganancia neta: ${fmt(ingOrg)}</div>
       </div>
-      <div style="background:#0f172a;border-radius:10px;padding:16px">
-        <div style="font-size:11px;color:#64748b;margin-bottom:8px">📊 CONVERSIÓN CAMPAÑA</div>
-        <div style="font-size:24px;font-weight:800;color:#a855f7">${totalLeads?((totalVentasCamp/totalLeads)*100).toFixed(1):0}%</div>
-        <div style="font-size:11px;color:#64748b">${totalVentasCamp} ventas / ${totalLeads} leads</div>
-        <div style="font-size:11px;color:#64748b">Costo promedio/cliente: ${fmt(totalVentasCamp?totalGasto/totalVentasCamp:0)}</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:16px">
+        <div style="font-size:11px;color:#7C98B6;margin-bottom:8px">📊 CONVERSIÓN CAMPAÑA</div>
+        <div style="font-size:24px;font-weight:800;color:#6A78D1">${totalLeads?((totalVentasCamp/totalLeads)*100).toFixed(1):0}%</div>
+        <div style="font-size:11px;color:#7C98B6">${totalVentasCamp} ventas / ${totalLeads} leads</div>
+        <div style="font-size:11px;color:#7C98B6">Costo promedio/cliente: ${fmt(totalVentasCamp?totalGasto/totalVentasCamp:0)}</div>
       </div>
     </div>
   `;
@@ -1762,43 +1768,43 @@ function renderCampanas() {
             const maxBar = Math.max(...roiRows.map(x=>x.ingTotalMes),1);
             return `<tr>
               <td style="font-weight:700">${r.mes}</td>
-              <td style="color:#3b82f6;font-weight:700">${r.total}</td>
-              <td style="color:#a855f7">${r.ventasCamp} <span style="font-size:9px;color:#64748b">(${fmt(r.ingCampMes)})</span></td>
-              <td style="color:#22c55e">${r.ventasOrg} <span style="font-size:9px;color:#64748b">(${fmt(r.ingOrgMes)})</span></td>
-              <td style="color:#38bdf8;font-weight:700">${fmt(r.ingTotalMes)}</td>
-              <td style="color:#f97316">${fmt(r.ingFinalMes)}</td>
-              <td style="font-weight:800;color:#38bdf8">
+              <td style="color:#0091AE;font-weight:700">${r.total}</td>
+              <td style="color:#6A78D1">${r.ventasCamp} <span style="font-size:9px;color:#7C98B6">(${fmt(r.ingCampMes)})</span></td>
+              <td style="color:#00BDA5">${r.ventasOrg} <span style="font-size:9px;color:#7C98B6">(${fmt(r.ingOrgMes)})</span></td>
+              <td style="color:#0091AE;font-weight:700">${fmt(r.ingTotalMes)}</td>
+              <td style="color:#FF7A59">${fmt(r.ingFinalMes)}</td>
+              <td style="font-weight:800;color:#0091AE">
                 ${fmt(r.ingTotalMes+r.ingFinalMes)}
                 <div class="bar-wrap" style="margin-top:3px;width:80px"><div class="bar-fill" style="width:${(r.ingTotalMes/maxBar*100).toFixed(0)}%"></div></div>
               </td>
-              <td style="color:#ef4444">${r.gastoMes>0?fmt(r.gastoMes):'—'}</td>
-              <td style="color:#f97316">${r.sueldosMes>0?fmt(r.sueldosMes):'—'}</td>
-              <td style="color:#facc15">${r.comAgMes>0?fmt(r.comAgMes):'—'}</td>
-              <td style="color:#ef4444;font-weight:700">${fmt(r.totalGastosMes)}</td>
+              <td style="color:#F2545B">${r.gastoMes>0?fmt(r.gastoMes):'—'}</td>
+              <td style="color:#FF7A59">${r.sueldosMes>0?fmt(r.sueldosMes):'—'}</td>
+              <td style="color:#D4A017">${r.comAgMes>0?fmt(r.comAgMes):'—'}</td>
+              <td style="color:#F2545B;font-weight:700">${fmt(r.totalGastosMes)}</td>
               <td style="font-weight:800;color:${pos?'#22c55e':'#ef4444'}">${pos?'+':''}${fmt(r.gananciaMes)}</td>
               <td>
                 <span style="font-weight:800;font-size:13px;color:${pos?'#22c55e':'#ef4444'}">${pos?'+':''}${r.roiMes.toFixed(1)}%</span>
               </td>
             </tr>`;
           }).join('')}
-          <tr style="background:#0f172a;border-top:2px solid #334155;font-weight:700">
+          <tr style="background:#F5F8FA;border-top:2px solid #334155;font-weight:700">
             <td>TOTAL</td>
-            <td style="color:#3b82f6">${roiRows.reduce((s,r)=>s+r.total,0)}</td>
-            <td style="color:#a855f7">${roiRows.reduce((s,r)=>s+r.ventasCamp,0)}</td>
-            <td style="color:#22c55e">${roiRows.reduce((s,r)=>s+r.ventasOrg,0)}</td>
-            <td style="color:#38bdf8">${fmt(totIngreso)}</td>
-            <td style="color:#f97316">${fmt(roiRows.reduce((s,r)=>s+r.ingFinalMes,0))}</td>
-            <td style="color:#38bdf8">${fmt(totIngreso+roiRows.reduce((s,r)=>s+r.ingFinalMes,0))}</td>
-            <td style="color:#ef4444">${fmt(roiRows.reduce((s,r)=>s+r.gastoMes,0))}</td>
-            <td style="color:#f97316">${fmt(roiRows.reduce((s,r)=>s+r.sueldosMes,0))}</td>
-            <td style="color:#facc15">${fmt(roiRows.reduce((s,r)=>s+r.comAgMes,0))}</td>
-            <td style="color:#ef4444">${fmt(totGasto)}</td>
+            <td style="color:#0091AE">${roiRows.reduce((s,r)=>s+r.total,0)}</td>
+            <td style="color:#6A78D1">${roiRows.reduce((s,r)=>s+r.ventasCamp,0)}</td>
+            <td style="color:#00BDA5">${roiRows.reduce((s,r)=>s+r.ventasOrg,0)}</td>
+            <td style="color:#0091AE">${fmt(totIngreso)}</td>
+            <td style="color:#FF7A59">${fmt(roiRows.reduce((s,r)=>s+r.ingFinalMes,0))}</td>
+            <td style="color:#0091AE">${fmt(totIngreso+roiRows.reduce((s,r)=>s+r.ingFinalMes,0))}</td>
+            <td style="color:#F2545B">${fmt(roiRows.reduce((s,r)=>s+r.gastoMes,0))}</td>
+            <td style="color:#FF7A59">${fmt(roiRows.reduce((s,r)=>s+r.sueldosMes,0))}</td>
+            <td style="color:#D4A017">${fmt(roiRows.reduce((s,r)=>s+r.comAgMes,0))}</td>
+            <td style="color:#F2545B">${fmt(totGasto)}</td>
             <td style="color:${totGanancia>=0?'#22c55e':'#ef4444'};font-size:15px">${totGanancia>=0?'+':''}${fmt(totGanancia)}</td>
             <td style="color:${roiTotal>=0?'#22c55e':'#ef4444'};font-size:15px">${roiTotal>=0?'+':''}${roiTotal.toFixed(1)}%</td>
           </tr>
         </tbody>
       </table>
-    </div>` : '<div style="color:#475569;padding:20px;text-align:center">Sin ventas registradas aún</div>';
+    </div>` : '<div style="color:#7C98B6;padding:20px;text-align:center">Sin ventas registradas aún</div>';
 }
 
 function openCampanaModal(id=null) {
@@ -1905,39 +1911,39 @@ function renderResumen() {
   const acumGanancia = (acumAdelantoCobrado+acumFinalCobrado) - acumComAg - acumSueldos;
 
   document.getElementById('resumen-cards').innerHTML = `
-    <div style="grid-column:1/-1;background:#0f172a;border-radius:12px;padding:16px 20px;border:1px solid #334155;margin-bottom:4px">
-      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#64748b;margin-bottom:14px">📊 ACUMULADO TOTAL — TODAS LAS VENTAS GENERADAS</div>
+    <div style="grid-column:1/-1;background:#F5F8FA;border-radius:12px;padding:16px 20px;border:1px solid #CBD6E2;margin-bottom:4px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7C98B6;margin-bottom:14px">📊 ACUMULADO TOTAL — TODAS LAS VENTAS GENERADAS</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px">
         <div style="text-align:center">
-          <div style="font-size:10px;color:#64748b">Clientes Activos</div>
-          <div style="font-size:26px;font-weight:800;color:#3b82f6">${acumClientes}</div>
+          <div style="font-size:10px;color:#7C98B6">Clientes Activos</div>
+          <div style="font-size:26px;font-weight:800;color:#0091AE">${acumClientes}</div>
         </div>
         <div style="text-align:center">
-          <div style="font-size:10px;color:#64748b">Primas/Mes Totales</div>
-          <div style="font-size:22px;font-weight:800;color:#22c55e">${fmt(acumPrimas)}</div>
+          <div style="font-size:10px;color:#7C98B6">Primas/Mes Totales</div>
+          <div style="font-size:22px;font-weight:800;color:#00BDA5">${fmt(acumPrimas)}</div>
         </div>
         <div style="text-align:center">
-          <div style="font-size:10px;color:#64748b">Com. Total Empresa</div>
-          <div style="font-size:22px;font-weight:800;color:#a855f7">${fmt(acumCom)}</div>
+          <div style="font-size:10px;color:#7C98B6">Com. Total Empresa</div>
+          <div style="font-size:22px;font-weight:800;color:#6A78D1">${fmt(acumCom)}</div>
         </div>
         <div style="text-align:center">
-          <div style="font-size:10px;color:#64748b">Adelantos (9m)</div>
-          <div style="font-size:22px;font-weight:800;color:#38bdf8">${fmt(acumAdelanto)}</div>
-          <div style="font-size:10px;color:#22c55e">Cobrado: ${fmt(acumAdelantoCobrado)}</div>
+          <div style="font-size:10px;color:#7C98B6">Adelantos (9m)</div>
+          <div style="font-size:22px;font-weight:800;color:#0091AE">${fmt(acumAdelanto)}</div>
+          <div style="font-size:10px;color:#00BDA5">Cobrado: ${fmt(acumAdelantoCobrado)}</div>
         </div>
         <div style="text-align:center">
-          <div style="font-size:10px;color:#64748b">Finales (3m)</div>
-          <div style="font-size:22px;font-weight:800;color:#f97316">${fmt(acumFinal)}</div>
-          <div style="font-size:10px;color:#22c55e">Cobrado: ${fmt(acumFinalCobrado)}</div>
+          <div style="font-size:10px;color:#7C98B6">Finales (3m)</div>
+          <div style="font-size:22px;font-weight:800;color:#FF7A59">${fmt(acumFinal)}</div>
+          <div style="font-size:10px;color:#00BDA5">Cobrado: ${fmt(acumFinalCobrado)}</div>
         </div>
         <div style="text-align:center">
-          <div style="font-size:10px;color:#64748b">Gastos Agentes+Sueldos</div>
-          <div style="font-size:22px;font-weight:800;color:#ef4444">${fmt(acumComAg+acumSueldos)}</div>
+          <div style="font-size:10px;color:#7C98B6">Gastos Agentes+Sueldos</div>
+          <div style="font-size:22px;font-weight:800;color:#F2545B">${fmt(acumComAg+acumSueldos)}</div>
         </div>
         <div style="text-align:center;border-left:2px solid #334155;padding-left:12px">
-          <div style="font-size:10px;color:#64748b">GANANCIA NETA ACUM.</div>
+          <div style="font-size:10px;color:#7C98B6">GANANCIA NETA ACUM.</div>
           <div style="font-size:26px;font-weight:800;color:${acumGanancia>=0?'#22c55e':'#ef4444'}">${fmt(acumGanancia)}</div>
-          <div style="font-size:9px;color:#64748b">cobrado − gastos</div>
+          <div style="font-size:9px;color:#7C98B6">cobrado − gastos</div>
         </div>
       </div>
     </div>
@@ -1956,32 +1962,32 @@ function renderResumen() {
       <tbody>${clientes.map((c,i)=>{
         const cc = clienteCom(c);
         const isSalud = c.tipo === 'salud';
-        return `<tr ${isSalud?'style="background:#060f0a"':''}>
+        return `<tr ${isSalud?'style="background:#F0FDF9"':''}>
           <td>${i+1}</td>
           <td><b>${c.nombre}</b></td>
           <td>${c.cuenta||'—'}</td>
           <td>${c.agente}</td>
           <td><span class="badge badge-${c.tipo}">${isSalud?'💚 Salud':c.tipo}</span></td>
-          <td>${isSalud?`<span style="color:#4ade80">${fmt(cc.mensual)}/mes</span>`:fmt(c.prima)}</td>
-          <td style="color:#38bdf8">${fmt(cc.total)}</td>
-          <td style="color:#22c55e">${isSalud?`${fmt(cc.adelanto)} cobrado`:fmt(cc.adelanto)}</td>
+          <td>${isSalud?`<span style="color:#00A492">${fmt(cc.mensual)}/mes</span>`:fmt(c.prima)}</td>
+          <td style="color:#0091AE">${fmt(cc.total)}</td>
+          <td style="color:#00BDA5">${isSalud?`${fmt(cc.adelanto)} cobrado`:fmt(cc.adelanto)}</td>
           <td>${isSalud?`<span class="badge badge-salud">${cc.meses}m cobrados</span>`:(c.adelantoPagado?'<span class="badge badge-paid">COBRADO</span>':'<span class="badge badge-pending">PENDIENTE</span>')}</td>
-          <td style="color:#f97316">${isSalud?`<span style="color:#4a6a8a">residual</span>`:fmt(cc.final)}</td>
-          <td>${isSalud?'<span style="color:#4a6a8a">—</span>':(c.finalPagado?'<span class="badge badge-paid">COBRADO</span>':'<span class="badge badge-pending">PENDIENTE</span>')}</td>
-          <td style="color:#a855f7">$8.00</td>
+          <td style="color:#FF7A59">${isSalud?`<span style="color:#7C98B6">residual</span>`:fmt(cc.final)}</td>
+          <td>${isSalud?'<span style="color:#7C98B6">—</span>':(c.finalPagado?'<span class="badge badge-paid">COBRADO</span>':'<span class="badge badge-pending">PENDIENTE</span>')}</td>
+          <td style="color:#6A78D1">$8.00</td>
           <td>${c.comAgentePagada?'<span class="badge badge-paid">✅</span>':'<span class="badge badge-pending">⏳</span>'}</td>
           <td><span class="badge badge-${c.estado}">${c.estado}</span></td>
         </tr>`;
       }).join('')}
-      <tr style="background:#0f172a;font-weight:700">
-        <td colspan="5" style="text-align:right;color:#64748b">TOTALES:</td>
-        <td style="color:#e2e8f0">${fmt(totalPrimas)}</td>
-        <td style="color:#38bdf8">${fmt(totalCom)}</td>
-        <td style="color:#22c55e">${fmt(totalAdelanto)}</td>
+      <tr style="background:#F5F8FA;font-weight:700">
+        <td colspan="5" style="text-align:right;color:#7C98B6">TOTALES:</td>
+        <td style="color:#33475B">${fmt(totalPrimas)}</td>
+        <td style="color:#0091AE">${fmt(totalCom)}</td>
+        <td style="color:#00BDA5">${fmt(totalAdelanto)}</td>
         <td></td>
-        <td style="color:#f97316">${fmt(totalFinal)}</td>
+        <td style="color:#FF7A59">${fmt(totalFinal)}</td>
         <td></td>
-        <td style="color:#a855f7">${fmt(comAgentes)}</td>
+        <td style="color:#6A78D1">${fmt(comAgentes)}</td>
         <td></td><td></td>
       </tr>
       </tbody>
@@ -2036,38 +2042,38 @@ function renderResumen() {
   document.getElementById('resumen-agentes-table').innerHTML = `
     <!-- RESUMEN REAL DEL MES -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px">
-      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #1a9fe3">
-        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Ventas del Mes</div>
-        <div style="font-size:24px;font-weight:800;color:#1a9fe3;margin-top:4px">${clientes.length}</div>
-        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">${todasVentasMes.length} activas${ventasSinAgente>0?` · <span style="color:#f97316">${ventasSinAgente} sin agente</span>`:''}</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:14px;border-left:3px solid #1a9fe3">
+        <div style="font-size:10px;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px">Ventas del Mes</div>
+        <div style="font-size:24px;font-weight:800;color:#FF7A59;margin-top:4px">${clientes.length}</div>
+        <div style="font-size:10px;color:#7C98B6;margin-top:2px">${todasVentasMes.length} activas${ventasSinAgente>0?` · <span style="color:#FF7A59">${ventasSinAgente} sin agente</span>`:''}</div>
       </div>
-      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #a855f7">
-        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Com. Empresa Generada</div>
-        <div style="font-size:24px;font-weight:800;color:#a855f7;margin-top:4px">${fmt(comEmpresaTotalMes)}</div>
-        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">30% × 12m de todas las ventas</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:14px;border-left:3px solid #a855f7">
+        <div style="font-size:10px;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px">Com. Empresa Generada</div>
+        <div style="font-size:24px;font-weight:800;color:#6A78D1;margin-top:4px">${fmt(comEmpresaTotalMes)}</div>
+        <div style="font-size:10px;color:#7C98B6;margin-top:2px">30% × 12m de todas las ventas</div>
       </div>
-      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #22c55e">
-        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Adelanto (9m) a Cobrar</div>
-        <div style="font-size:24px;font-weight:800;color:#22c55e;margin-top:4px">${fmt(comEmpresaRealMes)}</div>
-        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Cobrado: <b style="color:#22c55e">${fmt(comEmpresaCobradaMes)}</b> · Pendiente: <b style="color:#f97316">${fmt(comEmpresaRealMes-comEmpresaCobradaMes)}</b></div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:14px;border-left:3px solid #22c55e">
+        <div style="font-size:10px;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px">Adelanto (9m) a Cobrar</div>
+        <div style="font-size:24px;font-weight:800;color:#00BDA5;margin-top:4px">${fmt(comEmpresaRealMes)}</div>
+        <div style="font-size:10px;color:#7C98B6;margin-top:2px">Cobrado: <b style="color:#00BDA5">${fmt(comEmpresaCobradaMes)}</b> · Pendiente: <b style="color:#FF7A59">${fmt(comEmpresaRealMes-comEmpresaCobradaMes)}</b></div>
       </div>
-      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #f97316">
-        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Final (3m) Pendiente</div>
-        <div style="font-size:24px;font-weight:800;color:#f97316;margin-top:4px">${fmt(comEmpresaFinalMes)}</div>
-        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">se cobra al final del contrato</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:14px;border-left:3px solid #f97316">
+        <div style="font-size:10px;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px">Final (3m) Pendiente</div>
+        <div style="font-size:24px;font-weight:800;color:#FF7A59;margin-top:4px">${fmt(comEmpresaFinalMes)}</div>
+        <div style="font-size:10px;color:#7C98B6;margin-top:2px">se cobra al final del contrato</div>
       </div>
-      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid #ef4444">
-        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Total Gastos Agentes</div>
-        <div style="font-size:24px;font-weight:800;color:#ef4444;margin-top:4px">${fmt(totalSueldosTodos+totalComAg)}</div>
-        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">sueldos + com.$8</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:14px;border-left:3px solid #ef4444">
+        <div style="font-size:10px;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px">Total Gastos Agentes</div>
+        <div style="font-size:24px;font-weight:800;color:#F2545B;margin-top:4px">${fmt(totalSueldosTodos+totalComAg)}</div>
+        <div style="font-size:10px;color:#7C98B6;margin-top:2px">sueldos + com.$8</div>
       </div>
-      <div style="background:#080c14;border-radius:10px;padding:14px;border-left:3px solid ${comEmpresaRealMes-(totalSueldosTodos+totalComAg)>=0?'#22c55e':'#ef4444'}">
-        <div style="font-size:10px;color:#4a6a8a;text-transform:uppercase;letter-spacing:0.5px">Ganancia Neta del Mes</div>
+      <div style="background:#F5F8FA;border-radius:10px;padding:14px;border-left:3px solid ${comEmpresaRealMes-(totalSueldosTodos+totalComAg)>=0?'#22c55e':'#ef4444'}">
+        <div style="font-size:10px;color:#7C98B6;text-transform:uppercase;letter-spacing:0.5px">Ganancia Neta del Mes</div>
         <div style="font-size:24px;font-weight:800;color:${comEmpresaRealMes-(totalSueldosTodos+totalComAg)>=0?'#22c55e':'#ef4444'};margin-top:4px">${fmt(comEmpresaRealMes-(totalSueldosTodos+totalComAg))}</div>
-        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">adelanto − gastos agentes</div>
+        <div style="font-size:10px;color:#7C98B6;margin-top:2px">adelanto − gastos agentes</div>
       </div>
     </div>
-    ${ventasSinAgente>0?`<div style="background:#1c0a00;border:1px solid #9a3412;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#fb923c">⚠️ <b>${ventasSinAgente} venta${ventasSinAgente!==1?'s':''}</b> no tienen agente asignado — sus comisiones no aparecen en la tabla de abajo. Asígnalas en la sección <b>Clientes</b>.</div>`:''}
+    ${ventasSinAgente>0?`<div style="background:#FFF3EE;border:1px solid #FF7A59;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#FF9D80">⚠️ <b>${ventasSinAgente} venta${ventasSinAgente!==1?'s':''}</b> no tienen agente asignado — sus comisiones no aparecen en la tabla de abajo. Asígnalas en la sección <b>Clientes</b>.</div>`:''}
     <table>
       <thead><tr>
         <th>Agente</th>
@@ -2086,23 +2092,23 @@ function renderResumen() {
           const border = a.enPeligro ? '#7f1d1d' : '#166534';
           return `<tr style="background:${bg};border-left:3px solid ${color}">
             <td><b style="color:${color}">${a.nombre}</b><br>
-              <div style="margin-top:4px;background:#0f172a;border-radius:4px;height:5px;width:100px;overflow:hidden">
+              <div style="margin-top:4px;background:#F5F8FA;border-radius:4px;height:5px;width:100px;overflow:hidden">
                 <div style="height:100%;width:${a.porcentaje.toFixed(0)}%;background:${color};border-radius:4px"></div>
               </div>
-              <div style="font-size:9px;color:#64748b;margin-top:2px">${a.porcentaje.toFixed(0)}% cubierto</div>
+              <div style="font-size:9px;color:#7C98B6;margin-top:2px">${a.porcentaje.toFixed(0)}% cubierto</div>
             </td>
-            <td style="color:#3b82f6;font-weight:700">${a.vMes}</td>
-            <td style="color:#a855f7;font-weight:700">${fmt(a.comEmpresaAdelanto)}</td>
+            <td style="color:#0091AE;font-weight:700">${a.vMes}</td>
+            <td style="color:#6A78D1;font-weight:700">${fmt(a.comEmpresaAdelanto)}</td>
             <td style="color:${a.totalSueldos>0?'#f97316':'#ef4444'};font-weight:700">
-              ${a.totalSueldos>0 ? fmt(a.totalSueldos) : '<span style="color:#ef4444;font-size:10px">$0 — Sin pago</span>'}
-              <div style="font-size:9px;color:#64748b;margin-top:2px;white-space:normal;max-width:160px">
+              ${a.totalSueldos>0 ? fmt(a.totalSueldos) : '<span style="color:#F2545B;font-size:10px">$0 — Sin pago</span>'}
+              <div style="font-size:9px;color:#7C98B6;margin-top:2px;white-space:normal;max-width:160px">
                 ${a.quinDetalle.length ? a.quinDetalle.join('<br>') : ''}
                 ${a.sueldosPagados.map(s=>`${s.quincena||s.fecha}: ${fmt(s.monto)}`).join('<br>')||''}
                 ${!a.quinDetalle.length && !a.sueldosPagados.length ? '⚠️ No registrado' : ''}
               </div>
             </td>
-            <td style="color:#facc15">${fmt(a.comAg)}</td>
-            <td style="color:#ef4444;font-weight:700">${fmt(a.totalCostoAgente)}</td>
+            <td style="color:#D4A017">${fmt(a.comAg)}</td>
+            <td style="color:#F2545B;font-weight:700">${fmt(a.totalCostoAgente)}</td>
             <td style="font-weight:800;font-size:15px;color:${color}">${a.diferencia>=0?'+':''}${fmt(a.diferencia)}</td>
             <td>
               <div style="background:${bg};border:1.5px solid ${border};border-radius:8px;padding:6px 10px;text-align:center;font-weight:800;font-size:11px;color:${color}">
@@ -2111,26 +2117,26 @@ function renderResumen() {
             </td>
           </tr>`;
         }).join('')}
-        <tr style="background:#0f172a;font-weight:700;border-top:2px solid #334155">
-          <td style="color:#64748b">TOTALES</td>
+        <tr style="background:#F5F8FA;font-weight:700;border-top:2px solid #334155">
+          <td style="color:#7C98B6">TOTALES</td>
           <td></td>
-          <td style="color:#a855f7">${fmt(totalComEmpresa)}</td>
-          <td style="color:#f97316">${fmt(totalSueldosTodos)}</td>
-          <td style="color:#facc15">${fmt(totalComAg)}</td>
-          <td style="color:#ef4444">${fmt(totalCostoTodos)}</td>
+          <td style="color:#6A78D1">${fmt(totalComEmpresa)}</td>
+          <td style="color:#FF7A59">${fmt(totalSueldosTodos)}</td>
+          <td style="color:#D4A017">${fmt(totalComAg)}</td>
+          <td style="color:#F2545B">${fmt(totalCostoTodos)}</td>
           <td style="color:${totalComEmpresa-totalCostoTodos>=0?'#22c55e':'#ef4444'};font-size:15px">${totalComEmpresa-totalCostoTodos>=0?'+':''}${fmt(totalComEmpresa-totalCostoTodos)}</td>
           <td></td>
         </tr>
       </tbody>
     </table>
-    <div style="background:#0f172a;border-radius:10px;padding:16px;margin-top:16px;display:flex;gap:24px;flex-wrap:wrap">
-      <div><div style="font-size:11px;color:#64748b">💵 Adelanto que cobras (9m)</div><div style="font-size:20px;font-weight:800;color:#22c55e">${fmt(totalAdelanto)}</div></div>
-      <div style="color:#334155;font-size:24px;display:flex;align-items:center">−</div>
-      <div><div style="font-size:11px;color:#64748b">💸 Com. $8 agentes</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmt(totalComAg)}</div></div>
-      <div style="color:#334155;font-size:24px;display:flex;align-items:center">−</div>
-      <div><div style="font-size:11px;color:#64748b">💸 Sueldos pagados</div><div style="font-size:20px;font-weight:800;color:#ef4444">${fmt(totalSueldosTodos)}</div></div>
-      <div style="color:#334155;font-size:24px;display:flex;align-items:center">=</div>
-      <div><div style="font-size:11px;color:#64748b">✅ GANANCIA NETA DEL MES</div><div style="font-size:24px;font-weight:800;color:${gananciaNetoMes>=0?'#22c55e':'#ef4444'}">${fmt(gananciaNetoMes)}</div></div>
+    <div style="background:#F5F8FA;border-radius:10px;padding:16px;margin-top:16px;display:flex;gap:24px;flex-wrap:wrap">
+      <div><div style="font-size:11px;color:#7C98B6">💵 Adelanto que cobras (9m)</div><div style="font-size:20px;font-weight:800;color:#00BDA5">${fmt(totalAdelanto)}</div></div>
+      <div style="color:#CBD6E2;font-size:24px;display:flex;align-items:center">−</div>
+      <div><div style="font-size:11px;color:#7C98B6">💸 Com. $8 agentes</div><div style="font-size:20px;font-weight:800;color:#F2545B">${fmt(totalComAg)}</div></div>
+      <div style="color:#CBD6E2;font-size:24px;display:flex;align-items:center">−</div>
+      <div><div style="font-size:11px;color:#7C98B6">💸 Sueldos pagados</div><div style="font-size:20px;font-weight:800;color:#F2545B">${fmt(totalSueldosTodos)}</div></div>
+      <div style="color:#CBD6E2;font-size:24px;display:flex;align-items:center">=</div>
+      <div><div style="font-size:11px;color:#7C98B6">✅ GANANCIA NETA DEL MES</div><div style="font-size:24px;font-weight:800;color:${gananciaNetoMes>=0?'#22c55e':'#ef4444'}">${fmt(gananciaNetoMes)}</div></div>
     </div>`;
 }
 
@@ -2191,59 +2197,59 @@ function renderAlertaAgentes(containerId, mesFilter) {
   const el = document.getElementById(containerId);
   if(!el) return;
   if(!alertas.length) {
-    el.innerHTML = `<div style="background:#052e16;border:1px solid #166534;border-radius:12px;padding:14px 20px;margin-bottom:4px;display:flex;align-items:center;gap:12px">
+    el.innerHTML = `<div style="background:#E8F9F7;border:1px solid #00BDA5;border-radius:12px;padding:14px 20px;margin-bottom:4px;display:flex;align-items:center;gap:12px">
       <span style="font-size:20px">✅</span>
-      <span style="color:#4ade80;font-weight:600;font-size:13px">✅ Las comisiones de empresa generadas por cada agente cubren su sueldo mensual. ¡Todos son rentables!</span>
+      <span style="color:#00A492;font-weight:600;font-size:13px">✅ Las comisiones de empresa generadas por cada agente cubren su sueldo mensual. ¡Todos son rentables!</span>
     </div>`;
     return;
   }
   el.innerHTML = `
-    <div style="background:#1c0a00;border:1.5px solid #9a3412;border-radius:12px;padding:20px;margin-bottom:4px">
+    <div style="background:#FFF3EE;border:1.5px solid #FF7A59;border-radius:12px;padding:20px;margin-bottom:4px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
         <span style="font-size:22px">⚠️</span>
         <div>
-          <div style="font-weight:800;font-size:14px;color:#fb923c">Agentes que no cubren su sueldo con comisiones</div>
-          <div style="font-size:11px;color:#7c3a1a;margin-top:2px">La comisión total que genera el agente (todas sus ventas activas) no cubre su sueldo mensual</div>
+          <div style="font-weight:800;font-size:14px;color:#FF9D80">Agentes que no cubren su sueldo con comisiones</div>
+          <div style="font-size:11px;color:#C45A2A;margin-top:2px">La comisión total que genera el agente (todas sus ventas activas) no cubre su sueldo mensual</div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
         ${alertas.map(a=>`
-          <div style="background:#0f172a;border-radius:10px;padding:16px;border-left:4px solid #ef4444">
+          <div style="background:#F5F8FA;border-radius:10px;padding:16px;border-left:4px solid #ef4444">
             <div style="font-weight:700;font-size:14px;margin-bottom:10px">👤 ${a.nombre}</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;margin-bottom:12px">
-              <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Sueldo mensual</div>
-                <div style="font-weight:700;color:#f1f5f9">${fmt(a.sueldoMensual)}</div>
-                <div style="font-size:9px;color:#475569">(${fmt(a.sueldoQuincenal)} × 2 quinc.)</div>
+              <div style="background:#EAF0FB;border-radius:6px;padding:8px">
+                <div style="color:#7C98B6;font-size:10px">Sueldo mensual</div>
+                <div style="font-weight:700;color:#33475B">${fmt(a.sueldoMensual)}</div>
+                <div style="font-size:9px;color:#7C98B6">(${fmt(a.sueldoQuincenal)} × 2 quinc.)</div>
               </div>
-              <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Com. empresa (adelanto)</div>
-                <div style="font-weight:700;color:#22c55e">${fmt(a.comEmpresa)}</div>
-                <div style="font-size:9px;color:#475569">de ${a.ventasMes} venta${a.ventasMes!==1?'s':''}</div>
+              <div style="background:#EAF0FB;border-radius:6px;padding:8px">
+                <div style="color:#7C98B6;font-size:10px">Com. empresa (adelanto)</div>
+                <div style="font-weight:700;color:#00BDA5">${fmt(a.comEmpresa)}</div>
+                <div style="font-size:9px;color:#7C98B6">de ${a.ventasMes} venta${a.ventasMes!==1?'s':''}</div>
               </div>
-              <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Sueldo ya pagado</div>
+              <div style="background:#EAF0FB;border-radius:6px;padding:8px">
+                <div style="color:#7C98B6;font-size:10px">Sueldo ya pagado</div>
                 <div style="font-weight:700;color:${a.sueldoPagado>0?'#facc15':'#475569'}">${fmt(a.sueldoPagado)}</div>
-                <div style="font-size:9px;color:#475569">pendiente: ${fmt(a.sueldoPendiente)}</div>
+                <div style="font-size:9px;color:#7C98B6">pendiente: ${fmt(a.sueldoPendiente)}</div>
               </div>
-              <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Déficit empresa</div>
-                <div style="font-weight:700;color:#ef4444">${fmt(Math.abs(a.diferencia))}</div>
-                <div style="font-size:9px;color:#475569">com.empresa vs sueldo</div>
+              <div style="background:#EAF0FB;border-radius:6px;padding:8px">
+                <div style="color:#7C98B6;font-size:10px">Déficit empresa</div>
+                <div style="font-weight:700;color:#F2545B">${fmt(Math.abs(a.diferencia))}</div>
+                <div style="font-size:9px;color:#7C98B6">com.empresa vs sueldo</div>
               </div>
-              <div style="background:#1e293b;border-radius:6px;padding:8px">
-                <div style="color:#64748b;font-size:10px">Ventas necesarias</div>
-                <div style="font-weight:700;color:#f97316">~${a.ventasNecesarias}</div>
-                <div style="font-size:9px;color:#475569">tiene ${a.ventasMes}</div>
+              <div style="background:#EAF0FB;border-radius:6px;padding:8px">
+                <div style="color:#7C98B6;font-size:10px">Ventas necesarias</div>
+                <div style="font-weight:700;color:#FF7A59">~${a.ventasNecesarias}</div>
+                <div style="font-size:9px;color:#7C98B6">tiene ${a.ventasMes}</div>
               </div>
             </div>
-            <div style="background:#1c0a00;border-radius:8px;padding:10px;border:1px solid #9a3412">
-              <div style="font-size:11px;color:#fb923c">⚠️ La empresa gana <b style="color:#ef4444">${fmt(Math.abs(a.diferencia))}</b> menos de lo que le paga</div>
-              <div style="margin-top:4px;font-size:10px;color:#94a3b8">Necesita ~<b style="color:#f97316">${a.ventasFaltantes} venta${a.ventasFaltantes!==1?'s':''} más</b> para que su posición sea rentable</div>
+            <div style="background:#FFF3EE;border-radius:8px;padding:10px;border:1px solid #FF7A59">
+              <div style="font-size:11px;color:#FF9D80">⚠️ La empresa gana <b style="color:#F2545B">${fmt(Math.abs(a.diferencia))}</b> menos de lo que le paga</div>
+              <div style="margin-top:4px;font-size:10px;color:#7C98B6">Necesita ~<b style="color:#FF7A59">${a.ventasFaltantes} venta${a.ventasFaltantes!==1?'s':''} más</b> para que su posición sea rentable</div>
               <div class="bar-wrap" style="margin-top:8px;height:6px">
                 <div class="bar-fill" style="width:${Math.min(100,a.porcentaje).toFixed(0)}%;background:linear-gradient(90deg,#ef4444,#f97316)"></div>
               </div>
-              <div style="font-size:10px;color:#64748b;margin-top:3px">${a.porcentaje.toFixed(0)}% del sueldo cubierto por comisiones</div>
+              <div style="font-size:10px;color:#7C98B6;margin-top:3px">${a.porcentaje.toFixed(0)}% del sueldo cubierto por comisiones</div>
             </div>
           </div>
         `).join('')}
@@ -2405,11 +2411,11 @@ function renderPagos() {
 
     return `<div class="section" style="margin-bottom:20px">
       <div class="section-header">
-        <h2>👤 ${a.nombre} <span style="font-size:12px;color:#64748b;font-weight:400">— ${fmt(a.sueldoQuincenal)}/quinc.</span></h2>
+        <h2>👤 ${a.nombre} <span style="font-size:12px;color:#7C98B6;font-weight:400">— ${fmt(a.sueldoQuincenal)}/quinc.</span></h2>
         <div style="display:flex;gap:14px;font-size:12px">
-          <span>Sueldos pagados: <b style="color:#22c55e">${fmt(totalPagadoAg)}</b></span>
-          <span>Sueldos pendientes: <b style="color:#ef4444">${fmt(totalPendienteAg)}</b></span>
-          <span>Com.$8 pendientes: <b style="color:#f97316">${fmt(comAgPend)}</b></span>
+          <span>Sueldos pagados: <b style="color:#00BDA5">${fmt(totalPagadoAg)}</b></span>
+          <span>Sueldos pendientes: <b style="color:#F2545B">${fmt(totalPendienteAg)}</b></span>
+          <span>Com.$8 pendientes: <b style="color:#FF7A59">${fmt(comAgPend)}</b></span>
         </div>
       </div>
 
@@ -2443,7 +2449,7 @@ function renderPagos() {
                   </button>
                 </td>
                 <td style="text-align:center">
-                  <input type="date" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 6px;border-radius:5px;font-size:10px;width:110px"
+                  <input type="date" style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 6px;border-radius:5px;font-size:10px;width:110px"
                     value="${f.q1?.fecha||''}"
                     ${!f.q1?'disabled':''}
                     onchange="setQuincenaFecha('${a.nombre}','${f.mes}',1,this.value)">
@@ -2455,28 +2461,28 @@ function renderPagos() {
                   </button>
                 </td>
                 <td style="text-align:center">
-                  <input type="date" style="background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:3px 6px;border-radius:5px;font-size:10px;width:110px"
+                  <input type="date" style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 6px;border-radius:5px;font-size:10px;width:110px"
                     value="${f.q2?.fecha||''}"
                     ${!f.q2?'disabled':''}
                     onchange="setQuincenaFecha('${a.nombre}','${f.mes}',2,this.value)">
                 </td>
-                <td style="color:#38bdf8;font-weight:700">${fmt(f.sueldoMesPagado)}</td>
+                <td style="color:#0091AE;font-weight:700">${fmt(f.sueldoMesPagado)}</td>
                 <td style="color:${f.sueldoPend>0?'#ef4444':'#22c55e'};font-weight:700">${f.sueldoPend>0?fmt(f.sueldoPend):'✅'}</td>
-                <td style="color:#3b82f6">${f.ventasMes}</td>
-                <td style="color:#a855f7">${fmt(f.comMes)}</td>
-                <td style="color:#22c55e">${fmt(f.comMesPagada)}</td>
+                <td style="color:#0091AE">${f.ventasMes}</td>
+                <td style="color:#6A78D1">${fmt(f.comMes)}</td>
+                <td style="color:#00BDA5">${fmt(f.comMesPagada)}</td>
                 <td style="color:${f.comMes-f.comMesPagada>0?'#f97316':'#22c55e'}">${f.comMes-f.comMesPagada>0?fmt(f.comMes-f.comMesPagada):'✅'}</td>
                 <td style="font-weight:800;font-size:13px;color:${danger?'#ef4444':'#22c55e'}">${danger?fmt(f.totalPend):'✅ Al día'}</td>
               </tr>`;
             }).join('')}
-            <tr style="background:#0f172a;border-top:2px solid #334155;font-weight:700">
-              <td colspan="5" style="color:#64748b;text-align:right">TOTALES:</td>
-              <td style="color:#38bdf8">${fmt(totalPagadoAg)}</td>
-              <td style="color:#ef4444">${fmt(totalPendienteAg)}</td>
-              <td style="color:#3b82f6">${ventasAgente.length}</td>
-              <td style="color:#a855f7">${fmt(comAgPagadas+comAgPend)}</td>
-              <td style="color:#22c55e">${fmt(comAgPagadas)}</td>
-              <td style="color:#f97316">${fmt(comAgPend)}</td>
+            <tr style="background:#F5F8FA;border-top:2px solid #334155;font-weight:700">
+              <td colspan="5" style="color:#7C98B6;text-align:right">TOTALES:</td>
+              <td style="color:#0091AE">${fmt(totalPagadoAg)}</td>
+              <td style="color:#F2545B">${fmt(totalPendienteAg)}</td>
+              <td style="color:#0091AE">${ventasAgente.length}</td>
+              <td style="color:#6A78D1">${fmt(comAgPagadas+comAgPend)}</td>
+              <td style="color:#00BDA5">${fmt(comAgPagadas)}</td>
+              <td style="color:#FF7A59">${fmt(comAgPend)}</td>
               <td style="color:${totalPendienteAg+comAgPend>0?'#ef4444':'#22c55e'};font-size:14px">${fmt(totalPendienteAg+comAgPend)}</td>
             </tr>
           </tbody>
@@ -2519,9 +2525,9 @@ function openChargebackModal(id) {
   if(!c) return;
   const com = calcCom(c.prima);
   document.getElementById('cb-cliente-info').innerHTML = `
-    <div style="font-weight:700;color:#e8f0fe;margin-bottom:4px">👤 ${c.nombre}</div>
-    <div style="color:#4a6a8a;font-size:12px">Cuenta: ${c.cuenta||'—'} &nbsp;·&nbsp; Agente: ${c.agente} &nbsp;·&nbsp; Prima: ${fmt(c.prima)}/mes</div>
-    <div style="color:#4a6a8a;font-size:12px;margin-top:2px">Adelanto (9m): <b style="color:#22c55e">${fmt(com.adelanto)}</b> &nbsp;·&nbsp; Com. mensual: <b style="color:#1a9fe3">${fmt(c.prima*0.30)}</b></div>
+    <div style="font-weight:700;color:#33475B;margin-bottom:4px">👤 ${c.nombre}</div>
+    <div style="color:#7C98B6;font-size:12px">Cuenta: ${c.cuenta||'—'} &nbsp;·&nbsp; Agente: ${c.agente} &nbsp;·&nbsp; Prima: ${fmt(c.prima)}/mes</div>
+    <div style="color:#7C98B6;font-size:12px;margin-top:2px">Adelanto (9m): <b style="color:#00BDA5">${fmt(com.adelanto)}</b> &nbsp;·&nbsp; Com. mensual: <b style="color:#FF7A59">${fmt(c.prima*0.30)}</b></div>
   `;
   document.getElementById('cb-meses-pagados').value = c.mesesPagados !== undefined ? c.mesesPagados : '';
   document.getElementById('cb-mes-cancel').value = c.mesCancelacion || '';
@@ -2620,25 +2626,25 @@ function renderChargebacks() {
     const cb = calcChargeback(c.prima, c.mesesPagados||0);
     const comAg = c.comAgente!==undefined?c.comAgente:8;
     return `<tr style="background:rgba(239,68,68,0.06);border-left:3px solid #ef4444">
-      <td style="color:#4a6a8a">${i+1}</td>
+      <td style="color:#7C98B6">${i+1}</td>
       <td>
-        <b style="color:#ef4444">${c.nombre}</b>
-        ${c.notasChargeback?`<br><span style="font-size:10px;color:#4a6a8a">${c.notasChargeback}</span>`:''}
+        <b style="color:#F2545B">${c.nombre}</b>
+        ${c.notasChargeback?`<br><span style="font-size:10px;color:#7C98B6">${c.notasChargeback}</span>`:''}
       </td>
       <td>${c.cuenta||'—'}</td>
       <td>${c.agente}</td>
       <td><span class="badge badge-${c.tipo}">${c.tipo}</span></td>
       <td>${fmt(c.prima)}</td>
-      <td style="color:#22c55e;font-weight:700">${fmt(com.adelanto)}</td>
+      <td style="color:#00BDA5;font-weight:700">${fmt(com.adelanto)}</td>
       <td>
-        <input type="number" min="0" max="9" style="background:#080c14;border:1px solid #1e2d45;color:#e8f0fe;padding:3px 8px;border-radius:5px;font-size:12px;width:60px;text-align:center"
+        <input type="number" min="0" max="9" style="background:#F5F8FA;border:1px solid #CBD6E2;color:#33475B;padding:3px 8px;border-radius:5px;font-size:12px;width:60px;text-align:center"
           value="${c.mesesPagados||0}"
           onchange="actualizarMesesPagados(${c.id},parseInt(this.value))">
-        <span style="font-size:10px;color:#4a6a8a"> / 9m</span>
+        <span style="font-size:10px;color:#7C98B6"> / 9m</span>
       </td>
-      <td style="color:#f97316">${c.mesCancelacion ? c.mesCancelacion.replace('-','/'): '—'}</td>
-      <td style="font-weight:800;font-size:14px;color:#ef4444">${fmt(cb.devolver)}
-        <div style="font-size:9px;color:#4a6a8a">${cb.mesesDevolver}m × ${fmt(c.prima*0.30)}</div>
+      <td style="color:#FF7A59">${c.mesCancelacion ? c.mesCancelacion.replace('-','/'): '—'}</td>
+      <td style="font-weight:800;font-size:14px;color:#F2545B">${fmt(cb.devolver)}
+        <div style="font-size:9px;color:#7C98B6">${cb.mesesDevolver}m × ${fmt(c.prima*0.30)}</div>
       </td>
       <td style="color:${c.comAgentePagada?'#ef4444':'#22c55e'};font-weight:700">
         ${c.comAgentePagada ? fmt(comAg)+' ⚠️' : '✅ No pagada'}
