@@ -1561,48 +1561,75 @@ function renderResumen() {
 
   // AGENTES del mes
   const agentesDelMes = appData.agentes.map(a=>{
-    const vMes = clientes.filter(c=>c.agente===a.nombre);
+    const nombre = (a.nombre||'').trim().toLowerCase();
+    const vMes = clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre);
     const sueldosPagados = appData.sueldos.filter(s=>s.agenteNombre===a.nombre && s.fecha && s.fecha.startsWith(`${mesAnio}-${mesNum}`));
     const totalSueldos = sueldosPagados.reduce((t,s)=>t+s.monto,0);
-    const comEmpresa = vMes.reduce((s,c)=>s+calcCom(c.prima).total,0);
-    const comAg = vMes.length*8;
-    const totalPagarAgente = comAg + totalSueldos;
-    return { ...a, vMes:vMes.length, totalSueldos, comEmpresa, comAg, totalPagarAgente, sueldosPagados };
+    // Comisión ADELANTO que le entra a la empresa de las ventas de este agente
+    const comEmpresaAdelanto = vMes.filter(c=>c.estado==='activo').reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+    const comEmpresaTotal = vMes.filter(c=>c.estado==='activo').reduce((s,c)=>s+calcCom(c.prima).total,0);
+    // Lo que le cuesta a la empresa este agente
+    const comAg = vMes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+    const totalCostoAgente = comAg + totalSueldos;
+    // Diferencia: com empresa (adelanto) vs costo agente
+    const diferencia = comEmpresaAdelanto - totalCostoAgente;
+    const enPeligro = diferencia < 0;
+    const porcentaje = totalCostoAgente > 0 ? Math.min(100,(comEmpresaAdelanto/totalCostoAgente)*100) : 100;
+    return { ...a, vMes:vMes.length, totalSueldos, comEmpresaAdelanto, comEmpresaTotal, comAg, totalCostoAgente, diferencia, enPeligro, porcentaje, sueldosPagados };
   });
   const totalComAg = agentesDelMes.reduce((s,a)=>s+a.comAg,0);
   const totalSueldosTodos = agentesDelMes.reduce((s,a)=>s+a.totalSueldos,0);
-  const totalPagarTodos = agentesDelMes.reduce((s,a)=>s+a.totalPagarAgente,0);
+  const totalCostoTodos = agentesDelMes.reduce((s,a)=>s+a.totalCostoAgente,0);
+  const totalComEmpresa = agentesDelMes.reduce((s,a)=>s+a.comEmpresaAdelanto,0);
 
   document.getElementById('resumen-agentes-table').innerHTML = `
     <table>
       <thead><tr>
         <th>Agente</th>
-        <th>Ventas en ${mes}</th>
-        <th>Com. Empresa Generada</th>
-        <th>Com. $8 por Ventas</th>
-        <th>Sueldo Quincenal (ref.)</th>
-        <th>Sueldos Pagados en ${mes}</th>
-        <th>Quincenas Registradas</th>
-        <th style="color:#ef4444">TOTAL PAGADO AL AGENTE</th>
+        <th>Ventas</th>
+        <th>Com. Empresa (adelanto 9m)</th>
+        <th>Sueldos Pagados</th>
+        <th>Com. $8 Agente</th>
+        <th>Total Costo Agente</th>
+        <th>Diferencia</th>
+        <th>Estado</th>
       </tr></thead>
       <tbody>
-        ${agentesDelMes.map(a=>`<tr>
-          <td><b>${a.nombre}</b></td>
-          <td style="color:#3b82f6;font-weight:700">${a.vMes}</td>
-          <td style="color:#a855f7">${fmt(a.comEmpresa)}</td>
-          <td style="color:#22c55e;font-weight:700">${fmt(a.comAg)}</td>
-          <td style="color:#64748b">${fmt(a.sueldoQuincenal)}/quinc.</td>
-          <td style="color:#f97316;font-weight:700">${fmt(a.totalSueldos)}</td>
-          <td style="font-size:11px;color:#64748b">${a.sueldosPagados.map(s=>`${s.quincena||s.fecha}: ${fmt(s.monto)}`).join('<br>') || '—'}</td>
-          <td style="color:#ef4444;font-weight:800;font-size:14px">${fmt(a.totalPagarAgente)}</td>
-        </tr>`).join('')}
+        ${agentesDelMes.map(a=>{
+          const color = a.enPeligro ? '#ef4444' : '#22c55e';
+          const bg = a.enPeligro ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)';
+          const border = a.enPeligro ? '#7f1d1d' : '#166534';
+          return `<tr style="background:${bg};border-left:3px solid ${color}">
+            <td><b style="color:${color}">${a.nombre}</b><br>
+              <div style="margin-top:4px;background:#0f172a;border-radius:4px;height:5px;width:100px;overflow:hidden">
+                <div style="height:100%;width:${a.porcentaje.toFixed(0)}%;background:${color};border-radius:4px"></div>
+              </div>
+              <div style="font-size:9px;color:#64748b;margin-top:2px">${a.porcentaje.toFixed(0)}% cubierto</div>
+            </td>
+            <td style="color:#3b82f6;font-weight:700">${a.vMes}</td>
+            <td style="color:#a855f7;font-weight:700">${fmt(a.comEmpresaAdelanto)}</td>
+            <td style="color:#f97316">${fmt(a.totalSueldos)}<br>
+              <span style="font-size:9px;color:#64748b">${a.sueldosPagados.map(s=>`${s.quincena||s.fecha}`).join(', ')||'—'}</span>
+            </td>
+            <td style="color:#facc15">${fmt(a.comAg)}</td>
+            <td style="color:#ef4444;font-weight:700">${fmt(a.totalCostoAgente)}</td>
+            <td style="font-weight:800;font-size:15px;color:${color}">${a.diferencia>=0?'+':''}${fmt(a.diferencia)}</td>
+            <td>
+              <div style="background:${bg};border:1.5px solid ${border};border-radius:8px;padding:6px 10px;text-align:center;font-weight:800;font-size:11px;color:${color}">
+                ${a.enPeligro ? '🔴 PELIGRO' : '🟢 OK'}
+              </div>
+            </td>
+          </tr>`;
+        }).join('')}
         <tr style="background:#0f172a;font-weight:700;border-top:2px solid #334155">
-          <td colspan="3" style="text-align:right;color:#64748b">TOTALES DEL MES:</td>
-          <td style="color:#22c55e">${fmt(totalComAg)}</td>
+          <td style="color:#64748b">TOTALES</td>
           <td></td>
+          <td style="color:#a855f7">${fmt(totalComEmpresa)}</td>
           <td style="color:#f97316">${fmt(totalSueldosTodos)}</td>
+          <td style="color:#facc15">${fmt(totalComAg)}</td>
+          <td style="color:#ef4444">${fmt(totalCostoTodos)}</td>
+          <td style="color:${totalComEmpresa-totalCostoTodos>=0?'#22c55e':'#ef4444'};font-size:15px">${totalComEmpresa-totalCostoTodos>=0?'+':''}${fmt(totalComEmpresa-totalCostoTodos)}</td>
           <td></td>
-          <td style="color:#ef4444;font-size:15px">${fmt(totalPagarTodos)}</td>
         </tr>
       </tbody>
     </table>
