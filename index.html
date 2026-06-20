@@ -816,6 +816,26 @@ function renderDashboard() {
   const totalGasto = appData.campanas.reduce((s,c)=>s+(parseFloat(c.gasto)||0),0);
   const cpl = totalLeads ? (totalGasto/totalLeads) : 0;
 
+  // COSTO POR VENTA: gasto campañas + sueldos pagados + quincenas + com $8 agentes
+  const totalSueldos = appData.sueldos.reduce((s,x)=>s+x.monto,0);
+  let totalQuincenas = 0;
+  if(appData.quincenas) {
+    const meses = getMeses();
+    appData.agentes.forEach(a=>{
+      meses.forEach(mes=>{
+        [1,2].forEach(q=>{ if(appData.quincenas[getQuincenaKey(a.nombre,mes,q)]) totalQuincenas+=a.sueldoQuincenal; });
+      });
+    });
+  }
+  const totalComAg = appData.clientes.reduce((s,c)=>s+(c.comAgente!==undefined?c.comAgente:8),0);
+  const totalGastosGlobal = totalGasto + totalSueldos + totalQuincenas + totalComAg;
+  const totalVentas = appData.clientes.length;
+  const costoPorVenta = totalVentas ? (totalGastosGlobal / totalVentas) : 0;
+
+  // Ingreso promedio por venta (adelanto)
+  const ingresoPorVenta = activos.length ? (activos.reduce((s,c)=>s+calcCom(c.prima).adelanto,0) / activos.length) : 0;
+  const gananciaNetaPorVenta = ingresoPorVenta - costoPorVenta;
+
   document.getElementById('dash-cards').innerHTML = `
     <div class="card blue"><label>Total Clientes Activos</label><div class="val">${activos.length}</div><div class="sub">de ${appData.clientes.length} totales</div></div>
     <div class="card green"><label>Primas Mensuales</label><div class="val">${fmt(totalPrimas)}</div><div class="sub">ingresos recurrentes</div></div>
@@ -823,6 +843,8 @@ function renderDashboard() {
     <div class="card orange"><label>Adelantos Pendientes</label><div class="val">${fmt(comPendiente)}</div><div class="sub">por cobrar (9m)</div></div>
     <div class="card teal"><label>Ventas Este Mes</label><div class="val">${ventasMes}</div><div class="sub">${mesActual}</div></div>
     <div class="card yellow"><label>Costo por Lead</label><div class="val">${fmt(cpl)}</div><div class="sub">${totalLeads} leads / ${fmt(totalGasto)}</div></div>
+    <div class="card red"><label>Costo por Venta</label><div class="val">${fmt(costoPorVenta)}</div><div class="sub">camp+sueldos+com÷${totalVentas} ventas</div></div>
+    <div class="card ${gananciaNetaPorVenta>=0?'green':'red'}"><label>Ganancia Neta / Venta</label><div class="val">${gananciaNetaPorVenta>=0?'+':''}${fmt(gananciaNetaPorVenta)}</div><div class="sub">ingreso adelanto − costo</div></div>
   `;
 
   // RECENT
