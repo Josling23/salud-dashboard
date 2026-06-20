@@ -235,7 +235,7 @@ tr:hover td{background:#162032}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div class="section">
-          <div class="section-header"><h2>🤝 Comisiones Pendientes por Agente</h2></div>
+          <div class="section-header"><h2>🤝 Comisiones por Cobrar por Agente</h2></div>
           <div id="dash-agent-summary"></div>
         </div>
         <div class="section">
@@ -808,16 +808,32 @@ function renderDashboard() {
 
   // AGENT SUMMARY
   const agSum = appData.agentes.map(a=>{
-    const ventas = appData.clientes.filter(c=>c.agente===a.nombre && c.estado==='activo');
-    const pending = ventas.filter(c=>!c.adelantoPagado).reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
-    return { nombre:a.nombre, ventas:ventas.length, pending };
+    const nombre = (a.nombre||'').trim().toLowerCase();
+    const ventas = appData.clientes.filter(c=>(c.agente||'').trim().toLowerCase()===nombre && c.estado==='activo');
+    const adelantoPend = ventas.filter(c=>!c.adelantoPagado).reduce((s,c)=>s+calcCom(c.prima).adelanto,0);
+    const finalPend = ventas.filter(c=>!c.finalPagado).reduce((s,c)=>s+calcCom(c.prima).final,0);
+    const totalPend = adelantoPend + finalPend;
+    return { nombre:a.nombre, ventas:ventas.length, adelantoPend, finalPend, totalPend };
   });
-  document.getElementById('dash-agent-summary').innerHTML = agSum.length ? agSum.map(a=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #0f172a">
-      <div><div style="font-weight:600;font-size:13px">${a.nombre}</div><div style="font-size:11px;color:#64748b">${a.ventas} venta${a.ventas!==1?'s':''}</div></div>
-      <div style="text-align:right"><div style="font-weight:800;color:#f97316">${fmt(a.pending)}</div><div style="font-size:10px;color:#64748b">pendiente</div></div>
+  document.getElementById('dash-agent-summary').innerHTML = agSum.length ? `
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:6px 0 8px;border-bottom:1px solid #334155;font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.5px">
+      <span>Agente</span><span style="text-align:right">Adelanto (9m)</span><span style="text-align:right">Final (3m)</span><span style="text-align:right">Total Pendiente</span>
     </div>
-  `).join('') : '<div style="color:#475569;font-size:13px;padding:10px">Sin agentes</div>';
+    ${agSum.map(a=>`
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid #0f172a">
+      <div><div style="font-weight:600;font-size:13px">${a.nombre}</div><div style="font-size:10px;color:#64748b">${a.ventas} venta${a.ventas!==1?'s':''}</div></div>
+      <div style="text-align:right"><div style="font-weight:700;color:#22c55e;font-size:12px">${fmt(a.adelantoPend)}</div><div style="font-size:9px;color:#475569">9m pend.</div></div>
+      <div style="text-align:right"><div style="font-weight:700;color:#f97316;font-size:12px">${fmt(a.finalPend)}</div><div style="font-size:9px;color:#475569">3m pend.</div></div>
+      <div style="text-align:right"><div style="font-weight:800;color:#38bdf8;font-size:13px">${fmt(a.totalPend)}</div><div style="font-size:9px;color:#475569">total</div></div>
+    </div>
+  `).join('')}
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:6px;padding:8px 0 0;border-top:1px solid #334155;margin-top:2px">
+      <div style="font-size:11px;color:#64748b;font-weight:700">TOTAL</div>
+      <div style="text-align:right;font-weight:800;color:#22c55e;font-size:12px">${fmt(agSum.reduce((s,a)=>s+a.adelantoPend,0))}</div>
+      <div style="text-align:right;font-weight:800;color:#f97316;font-size:12px">${fmt(agSum.reduce((s,a)=>s+a.finalPend,0))}</div>
+      <div style="text-align:right;font-weight:800;color:#38bdf8;font-size:13px">${fmt(agSum.reduce((s,a)=>s+a.totalPend,0))}</div>
+    </div>
+  ` : '<div style="color:#475569;font-size:13px;padding:10px">Sin agentes</div>';
 
   // CAMPAIGNS
   document.getElementById('dash-campaigns').innerHTML = appData.campanas.map(c=>{
