@@ -2740,12 +2740,16 @@ async function sendBotMessage() {
       headers: { 'Content-Type': 'application/json', 'x-api-key': botAPIKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', max_tokens: 1024, messages: [{role: 'user', content: message}] })
     });
-    if (!response.ok) throw new Error('API Error: ' + response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error('Status ' + response.status + ': ' + (errorData.error?.message || 'API Error'));
+    }
     const data = await response.json();
     const reply = data.content[0].text;
     addBotMessage(reply, 'bot');
   } catch(e) {
-    addBotMessage('Error: ' + e.message, 'bot');
+    console.error('Bot error:', e);
+    addBotMessage('⚠️ ' + e.message, 'bot');
   }
 }
 
